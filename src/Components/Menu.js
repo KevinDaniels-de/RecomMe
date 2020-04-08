@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import {Link, useLocation} from 'react-router-dom'
 
 const StyledMenu = styled.nav`
     display: flex;
@@ -11,6 +12,40 @@ const StyledMenu = styled.nav`
     bottom: 0;
     left: 0;
 
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        height: 70px;
+        text-decoration: none;
+        color: black;
+
+        &.active {
+            span {
+                color: red;
+            }
+
+            svg {
+                fill: red;
+            }
+        }
+        
+        svg {
+            width: 36px;
+            margin: 0 auto;
+        }
+    
+        span {
+            font-family: ${({theme}) => theme.typography.font.headline};
+            font-size: 9px;
+            text-transform: uppercase;
+            width: 100%;
+            text-align: center;
+        }
+    }
+
     ${({theme}) => theme.mediaQueries.tablet} {
     }
 
@@ -21,74 +56,51 @@ const StyledMenu = styled.nav`
         justify-content: flex-start;
         align-items: flex-start;
         padding: 10px;
-    }
-`;
 
-const StyledMenuItem = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    height: 70px;
+        .nav-item {
+            cursor: pointer;
+            height: auto;
+            flex-direction: row;
+            width: 100%;
+            flex: none;
+            margin-bottom: 20px;
 
-    svg {
-        width: 36px;
-        margin: 0 auto;
-    }
+            &:hover {
+                span {
+                    color: red;
+                }
 
-    span {
-        font-family: ${({theme}) => theme.typography.font.headline};
-        font-size: 9px;
-        text-transform: uppercase;
-        width: 100%;
-        text-align: center;
-    }
-
-    ${({theme}) => theme.mediaQueries.tablet} {
-    }
-
-    ${({theme}) => theme.mediaQueries.desktop} {
-        cursor: pointer;
-        height: auto;
-        flex-direction: row;
-        width: 100%;
-        flex: none;
-        margin-bottom: 20px;
-        
-        svg, span {
-            transition: color .2s, fill .2s;
-            text-align: left;
-            margin: 5px;
-        }
-
-        svg {
-            width: 50px;
-        }
-
-        &:hover {
-            span {
-                color: red;
+                svg {
+                    fill: red;
+                }
+            }
+            
+            svg, span {
+                transition: color .2s, fill .2s;
+                text-align: left;
+                margin: 5px;
             }
 
             svg {
-                fill: red;
+                width: 50px;
             }
         }
     }
 `;
 
 function MenuItem(props) {
-    const {path, title} = props;
+    const {path, svg, title} = props;
+    const location = useLocation();
+    const isActive = location.pathname.split('/')[1] === title.toLowerCase() ? true : false;
 
     return (
-        <StyledMenuItem>
+        <Link to={path} className={`nav-item${isActive ? " active" : ""}`}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                <path d={path}/>
+                <path d={svg}/>
             </svg>
 
             <span>{title}</span>
-        </StyledMenuItem>
+        </Link>
     );
 }
 
@@ -97,7 +109,7 @@ function Menu(props) {
 
     return (
         <StyledMenu>
-            {menuItems.map(item => <MenuItem key={item.id} path={item.path} title={item.title} />)}
+            {menuItems.map(item => <MenuItem key={item.id} path={item.path} svg={item.svg} title={item.title} />)}
         </StyledMenu>
     );
 }
