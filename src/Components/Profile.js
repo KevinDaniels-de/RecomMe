@@ -2,11 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 
 const StyledProfile = styled.div`
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    align-item: flex-start;
-    justify-content: flex-start;
-    width: 150px;
+    align-items: flex-start;
+    justify-content: center;
 
     ${({theme}) => theme.mediaQueries.tablet} {
     }
@@ -15,50 +14,55 @@ const StyledProfile = styled.div`
     }
 `;
 
-const StyledImage = styled.div`
-    width: 130px;
-    height: 130px;
+const StyledImageOuter = styled.div`
+    width: 150px;
+    height: 150px;
+    margin: 15px;
+    padding: 15px;
+    border-radius: 100px;
+    background: ${({theme}) => theme.colors.blue.full};
+    box-shadow: inset 7px 7px 7px ${({theme}) => theme.colors.blue.dark}, 
+                inset -7px -7px 7px ${({theme}) => theme.colors.blue.light};
+`;
+
+const StyledImageInner = styled.div`
+    width: 100%;
+    height: 100%;
+    border-radius: 100px;
     background-image: url(${props => props.src});
     background-size: cover;
     background-position: 50% 50%;
-    border-radius: 100%;
+    box-shadow: 3px 3px 5px ${({theme}) => theme.colors.blue.dark};
 `;
 
-const StyledBar = styled.div`
-    width: 100%;
-    margin-top: -20px;
+const StyledInfoContainer = styled.div`
+    padding: 20px 20px 20px 0;
 `;
 
 const StyledBarOuter = styled.div`
-    width: 100%;
-    height: 25px;
-    transform: skew(-10deg) rotate(-10deg);
-    padding: 3px;
-    background: white;
-    border: 1px solid #ccc;
+    margin: 10px 0 3px 0;
+    padding: 5px 7px;
+    border-radius: 20px;
+    background: ${({theme}) => theme.colors.blue.full};
+    box-shadow: inset 7px 7px 7px ${({theme}) => theme.colors.blue.dark}, 
+                inset -7px -7px 7px ${({theme}) => theme.colors.blue.light};
 `;
 
 const StyledBarInner = styled.div`
+    background: ${({theme}) => theme.colors.yellow.full};
     width: ${props => props.percentage}%;
-    height: 100%;
-    background: orange;
-    transition: width 1s ease-out;
+    height: 10px;
+    border-radius: 20px;
 `;
 
 const StyledLevel = styled.div`
-    width: 100%;
-    transform: rotate(-10deg);
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 6px;
     text-align: right;
 
     span {
-        font-family: ${({theme}) => theme.typography.font.headline};
-        vertical-align: super;
-    }
-
-    b {
-        font-size: 50px;
-        color: orange;
-        -webkit-text-stroke: 1px white;
+        font-size: 50%;
     }
 `;
 
@@ -68,16 +72,18 @@ function Profile(props) {
 
     return (
         <StyledProfile>
-            <StyledImage src={image}/>
-            <StyledBar>
+            <StyledImageOuter>
+                <StyledImageInner src={image}/>
+            </StyledImageOuter>
+            <StyledInfoContainer>
+                <h5>{name}</h5>
                 <StyledBarOuter>
                     <StyledBarInner percentage={percentage} />
                 </StyledBarOuter>
                 <StyledLevel>
                     <span>Lv</span><b>{level}</b>
                 </StyledLevel>
-            </StyledBar>
-            <h2>{name}</h2>
+            </StyledInfoContainer>
         </StyledProfile>
     )
 }

@@ -6,53 +6,45 @@ const theme = {
 
     typography: {
         font: {
-            text: "'Crimson Text'",
-            headline: "'Montserrat'"
-        }
+            text: "'Lato'",
+            headline: "'Oswald'"
+        },
+        baseSize: "10px",
+        h1: "7rem",
+        h2: "6rem",
+        h3: "5rem",
+        h4: "4rem",
+        h5: "3rem",
+        h6: "2rem"
     },
 
     colors: {
-      purple: "#BC9CFF",
-      lightPurple: "#95A2FB",
-      grey: "#E9E9EC",
-      green: "#6FCF97",
-      darkGreen: "#256C43",
-      darkShade: {
-        100: "rgba(31, 32, 65, 100)",
-        75: "rgba(31, 32, 65, 0.75)",
-        50: "rgba(31, 32, 65, 0.50)",
-        25: "rgba(31, 32, 65, 0.25)",
-        10: "rgba(31, 32, 65, 0.10)",
-        5: "rgba(31, 32, 65, 0.05)",
-        2: "rgba(31, 32, 65, 0.02)"
+      yellow: {
+        light: "#FFD141",
+        full:  "#FFC512",
+        dark:  "#E6B110"
+      },
+
+      brown: {
+        light: "#D4B788",
+        full:  "#CFAF7B",
+        dark:  "#BA9E6F"
+      },
+
+      blue: {
+        light: "#1d91d6",
+        full:  "#0485d1",
+        dark:  "#0478bc"
+      },
+
+      black: {
+        100: "#000",
+        75:  "#4a4a4a",
+        50:  "#8e8e8e",
+        25:  "#bbb",
+        10:  "#e8e8e8",
+        0:   "#fff"
       }
-    },
-    typography2: {
-      fontFamily: "Quicksand",
-      h1: {
-        fontSize: "42px"
-      },
-      h2: {
-          fontSize: "32px"
-      },
-  
-      h3: {
-          fontSize: "24px"
-      },
-  
-      h4: {
-          fontSize: "24px"
-      }, 
-  
-      h6: {
-        fontSize: "14px",
-        fontWeight: "bold"
-      },
-  
-      em: {
-        fontSize: "11px",
-      }
-  
     }
   };
   

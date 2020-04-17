@@ -1,55 +1,51 @@
 import {createGlobalStyle} from 'styled-components'
 
+import LatoRegular from '../assets/fonts/lato-regular.woff2'
+import Lato700 from '../assets/fonts/lato-regular.woff2'
+import OswaldRegular from '../assets/fonts/oswald-regular.woff2'
+import Oswald700 from '../assets/fonts/oswald-700.woff2'
+
 const GlobalStyles = createGlobalStyle`
     @font-face {
-        font-family: ${({theme}) => theme.typography.font.text};
+        font-family: 'Lato';
         font-style: normal;
         font-weight: 700;
-        src: local('Crimson Text Bold'), local('CrimsonText-Bold'), url('/fonts/crimson-text-700.woff2') format('woff2');
+        src: local('Lato Bold'), local('Lato-Bold'), url('${Lato700}') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
     }
 
     @font-face {
-        font-family: ${({theme}) => theme.typography.font.text};
+        font-family: 'Lato';
         font-style: normal;
         font-weight: 400;
-        src: local('Crimson Text Regular'), local('CrimsonText-Regular'), url('/fonts/crimson-text-regular.woff2') format('woff2');
+        src: local('Lato Regular'), local('Lato-Regular'), url('${LatoRegular}') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
     }
 
     @font-face {
-        font-family: ${({theme}) => theme.typography.font.headline};
+        font-family: 'Oswald';
         font-style: normal;
         font-weight: 700;
-        src: local('Montserrat Bold'), local('Montserrat-Bold'), url('/fonts/montserrat-700.woff2') format('woff2');
+        src: url('${Oswald700}') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
     }
 
     @font-face {
-        font-family: ${({theme}) => theme.typography.font.headline};
-        font-style: normal;
-        font-weight: 900;
-        src: local('Montserrat Black'), local('Montserrat-Black'), url('/fonts/montserrat-900.woff2') format('woff2');
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-    }
-
-    /* latin */
-    @font-face {
-        font-family: ${({theme}) => theme.typography.font.headline};
+        font-family: 'Oswald';
         font-style: normal;
         font-weight: 400;
-        src: local('Montserrat Regular'), local('Montserrat-Regular'), url('/fonts/montserrat-regular.woff2') format('woff2');
+        src: url('${OswaldRegular}') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
     }
 
     ::-moz-selection {
-        color: white;
-        background: #F07D00;
+        color: ${({theme}) => theme.colors.black[0]};
+        background: ${({theme}) => theme.colors.black[100]};
     }
     
     ::selection {
-        color: white;
-        background: #F07D00;
+        color: ${({theme}) => theme.colors.black[0]};
+        background: ${({theme}) => theme.colors.black[100]};
     }
     
     *::-webkit-scrollbar-track {
@@ -59,12 +55,12 @@ const GlobalStyles = createGlobalStyle`
     
     *::-webkit-scrollbar {
         width: 10px;
-        background-color: #fff;
+        background-color: ${({theme}) => theme.colors.black[0]};
     }
     
     *::-webkit-scrollbar-thumb {
-        background-color: #F07D00;
-        border-radius: 20px;
+        background-color: ${({theme}) => theme.colors.blue.full};
+        border-radius: 0;
     }
 
     * {
@@ -73,14 +69,46 @@ const GlobalStyles = createGlobalStyle`
     }
 
     html {
-        font-size: 10px;
+        font-size: ${({theme}) => theme.typography.baseSize};
     }
 
     body {
         font-family: ${({theme}) => theme.typography.font.text};
         font-size: 1.6rem;
         line-height: 1.618em;
+        color: ${({theme}) => theme.colors.black[100]};
     }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: ${({theme}) => theme.typography.font.headline};
+        line-height: 100%;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: ${({theme}) => theme.typography.h1};
+    }
+    
+    h2 {
+        font-size: ${({theme}) => theme.typography.h2};
+    }
+
+    h3 {
+        font-size: ${({theme}) => theme.typography.h3};
+    }
+
+    h4 {
+        font-size: ${({theme}) => theme.typography.h4};
+    }
+
+    h5 {
+        font-size: ${({theme}) => theme.typography.h5};
+    }
+
+    h6 {
+        font-size: ${({theme}) => theme.typography.h6};
+    }
+
 `;
 
 export default GlobalStyles;

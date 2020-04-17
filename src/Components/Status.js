@@ -18,8 +18,7 @@ const StyledStatus = styled.div`
 
 
 function Status(props) {
-    const {userData} = props;
-    const {name, image, experience, recommedations, peopleMet} = userData;
+    const {name, image, experience} = props;
 
     return (
         <StyledStatus>
