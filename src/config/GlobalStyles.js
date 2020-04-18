@@ -39,13 +39,13 @@ const GlobalStyles = createGlobalStyle`
     }
 
     ::-moz-selection {
-        color: ${({theme}) => theme.colors.black[0]};
-        background: ${({theme}) => theme.colors.black[100]};
+        color: ${({theme}) => theme.colors.white};
+        background: ${({theme}) => theme.colors.black};
     }
     
     ::selection {
-        color: ${({theme}) => theme.colors.black[0]};
-        background: ${({theme}) => theme.colors.black[100]};
+        color: ${({theme}) => theme.colors.white};
+        background: ${({theme}) => theme.colors.black};
     }
     
     *::-webkit-scrollbar-track {
@@ -55,11 +55,11 @@ const GlobalStyles = createGlobalStyle`
     
     *::-webkit-scrollbar {
         width: 10px;
-        background-color: ${({theme}) => theme.colors.black[0]};
+        background-color: ${({theme}) => theme.colors.black};
     }
     
     *::-webkit-scrollbar-thumb {
-        background-color: ${({theme}) => theme.colors.blue.full};
+        background-color: ${({theme}) => theme.colors.blue};
         border-radius: 0;
     }
 
@@ -76,7 +76,8 @@ const GlobalStyles = createGlobalStyle`
         font-family: ${({theme}) => theme.typography.font.text};
         font-size: 1.6rem;
         line-height: 1.618em;
-        color: ${({theme}) => theme.colors.black[100]};
+        color: ${({theme}) => theme.colors.black};
+        background: ${({theme}) => theme.colors.white};
     }
 
     h1, h2, h3, h4, h5, h6 {

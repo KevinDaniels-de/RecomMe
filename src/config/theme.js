@@ -19,31 +19,14 @@ const theme = {
     },
 
     colors: {
-      yellow: {
-        light: "#FFD141",
-        full:  "#FFC512",
-        dark:  "#E6B110"
-      },
+      white: "#f1f1f1",
+      black: "#1d1d1d",
+      royal: "#000133",
+      blue: "#1e488f",
 
-      brown: {
-        light: "#D4B788",
-        full:  "#CFAF7B",
-        dark:  "#BA9E6F"
-      },
-
-      blue: {
-        light: "#1d91d6",
-        full:  "#0485d1",
-        dark:  "#0478bc"
-      },
-
-      black: {
-        100: "#000",
-        75:  "#4a4a4a",
-        50:  "#8e8e8e",
-        25:  "#bbb",
-        10:  "#e8e8e8",
-        0:   "#fff"
+      shades: {
+        dark: "rgba(0, 0, 0, .1)",
+        light: "rgba(255, 255, 255, .1)"
       }
     }
   };

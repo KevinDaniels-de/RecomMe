@@ -28,7 +28,7 @@ const userData = {
 
 const StyledApp = styled.div`
     background: ${theme.colors.blue.full};
-    padding-bottom: 70px;
+    padding-bottom: 85px;
     min-height: 100vh;
 
     ${theme.mediaQueries.tablet} {}

@@ -7,33 +7,31 @@ import Activity from '../Components/Activity'
 
 const StyledDashboard = styled.section`
     position: relative;
-    padding: 20px;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
 
-    ${({theme}) => theme.mediaQueries.desktop} {
-        .profile {
-            max-width: 400px;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .extra {
-            max-width: 80px;
-            max-height: 80px;
-            position: absolute;
-            right: 440px;
-            top: 20px;
-
-            &:last-child {
-                right: 440px;
-                top: 120px;
-            }
-        }
+    .profile {
+        margin: 0;
+        border-radius: 0;
+        background: linear-gradient(145deg, ${({theme}) => theme.colors.blue}, ${({theme}) => theme.colors.royal});
+        box-shadow: none;
+        padding-bottom: 20px;
+        height: 180px;
     }
+
+    .main {
+        margin: 0;
+        padding: 20px;
+        transform: translateY(-20px);
+        border-radius: 20px 20px 0 0;
+        background: ${({theme}) => theme.colors.white};
+        box-shadow:  5px 5px 19px ${({theme}) => theme.colors.shades.dark}, 
+                    -5px -5px 19px ${({theme}) => theme.colors.shades.light};
+    }
+
+    ${({theme}) => theme.mediaQueries.desktop} {}
 `;
 
 function Dashboard(props) {
@@ -43,15 +41,11 @@ function Dashboard(props) {
     return (
         <StyledDashboard>
             <Container className="profile" size={100}>
-                <Status name={name} image={image} experience={experience}/>
+                <Status name={name} image={image} experience={experience} recommendations={recommendations} peopleMet={peopleMet} />
             </Container>
 
-            <Container className="extra" size={47}>
-                <Activity recommendations={recommendations}/>
-            </Container>
-
-            <Container className="extra" size={47}>
-                <Activity peopleMet={peopleMet}/>
+            <Container className="main" size={100}>
+                <h1></h1>
             </Container>
         </StyledDashboard>
     )

@@ -12,8 +12,7 @@ const StyledMenu = styled.nav`
     position: fixed;
     bottom: 0;
     left: 0;
-    box-shadow: 0px -10px 5px ${({theme}) => theme.colors.blue.dark};
-    background: ${({theme}) => theme.colors.blue.dark};
+    background: ${({theme}) => theme.colors.white};
 
     img {
         display: none;
@@ -24,40 +23,31 @@ const StyledMenu = styled.nav`
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 85px;
-        height: 85px;
+        width: 65px;
+        height: 65px;
         text-decoration: none;
         border-radius: 100px;
         margin: 10px;
-        color: ${({theme}) => theme.colors.black[0]};
+        color: ${({theme}) => theme.colors.white};
 
         &.active {
-            background: ${({theme}) => theme.colors.blue.full};
-            box-shadow: inset 5px 5px 12px ${({theme}) => theme.colors.blue.dark}, 
-                        inset -5px -5px 12px ${({theme}) => theme.colors.blue.light};
-
-            span {
-                color: ${({theme}) => theme.colors.yellow.full};
-            }
+            background: ${({theme}) => theme.colors.white};
+            box-shadow: inset 5px 5px 10px ${({theme}) => theme.colors.shades.dark}, 
+                        inset -5px -5px 10px ${({theme}) => theme.colors.shades.light};
 
             svg {
-                fill: ${({theme}) => theme.colors.yellow.full};
+                fill: ${({theme}) => theme.colors.blue};
             }
         }
         
         svg {
             width: 36px;
             margin: 0 auto;
-            fill: ${({theme}) => theme.colors.black[0]};
+            fill: ${({theme}) => theme.colors.shades.black};
         }
     
         span {
-            font-family: ${({theme}) => theme.typography.font.text};
-            font-size: .7rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            width: 100%;
-            text-align: center;
+            display: none;
         }
     }
 
@@ -71,7 +61,7 @@ const StyledMenu = styled.nav`
         flex-direction: column;
         align-items: flex-start;
         padding: 10px;
-        background: ${({theme}) => theme.colors.black[0]};
+        background: ${({theme}) => theme.colors.white};
 
         img {
             display: block;
@@ -92,29 +82,29 @@ const StyledMenu = styled.nav`
             transition: all .2s;
 
             &.active, &:hover {
-                background-color: ${({theme}) => theme.colors.black[0]};
-                box-shadow: inset 7px 7px 14px ${({theme}) => theme.colors.black[25]}, 
-                            inset -7px -7px 14px ${({theme}) => theme.colors.black[0]};
+                background-color: ${({theme}) => theme.colors.white};
+                box-shadow: inset 7px 7px 14px ${({theme}) => theme.colors.shades.dark}, 
+                            inset -7px -7px 14px ${({theme}) => theme.colors.white};
 
                 svg {
-                    fill: ${({theme}) => theme.colors.yellow.full};
+                    fill: ${({theme}) => theme.colors.blue};
                 }
 
                 span {
-                    color: ${({theme}) => theme.colors.yellow.full};
+                    color: ${({theme}) => theme.colors.blue};
                 }
             }
 
             svg {
                 width: 60px;
                 margin: 0 10px 0 0;
-                fill: ${({theme}) => theme.colors.black[100]};
+                fill: ${({theme}) => theme.colors.black};
             }
 
             span {
                 width: auto;
                 font-size: 1.6rem;
-                color: ${({theme}) => theme.colors.black[100]};
+                color: ${({theme}) => theme.colors.black};
                 font-weight: 700;
             }
         }
