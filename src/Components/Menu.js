@@ -13,6 +13,7 @@ const StyledMenu = styled.nav`
     bottom: 0;
     left: 0;
     background: ${({theme}) => theme.colors.white};
+    z-index: 100;
 
     img {
         display: none;
@@ -132,7 +133,7 @@ function Menu(props) {
 
     return (
         <StyledMenu>
-            <img src={logo} />
+            <img src={logo} alt="Navigation Icon" />
             {menuItems.map(item => <MenuItem key={item.id} path={item.path} svg={item.svg} title={item.title} />)}
         </StyledMenu>
     );

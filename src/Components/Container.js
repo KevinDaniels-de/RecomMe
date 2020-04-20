@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const Container = styled.section`
-    width: ${props => props.size}%;
+    width: ${props => props.size ? `${props.size}%` : 'auto'};
     border-radius: 15px;
     background: linear-gradient(145deg, ${({theme}) => theme.colors.shades.dark}, ${({theme}) => theme.colors.shades.light});
     box-shadow:  11px 11px 20px ${({theme}) => theme.colors.shades.dark}, 
