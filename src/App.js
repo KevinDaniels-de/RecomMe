@@ -4,12 +4,18 @@ import styled from 'styled-components'
 import theme from './config/theme'
 import {ThemeProvider} from 'styled-components'
 import {Switch, Route, Redirect} from 'react-router-dom'
-import userAvatar from "./assets/userAvatar.jpg";
+import userAvatar from "./assets/userAvatar.jpg"
+import useAuth from "./services/firebase/useAuth"
+import firebase from "firebase/app" // the firbase core lib
+import "firebase/auth" // specific products
+import firebaseConfig from "./config/firebase" // the firebase config we set up ealier
 
 import GlobalStyles from './config/GlobalStyles'
 import Dashboard from './Views/Dashboard'
 import Browse from './Views/Browse'
 import Store from './Views/Store'
+import Radar from './Views/Radar'
+import Login from './Views/Login'
 import Menu from './Components/Menu'
 
 const menuItems = [
@@ -85,7 +91,6 @@ const StyledApp = styled.div`
     }
 `;
 
-
 function App() {
     const checkStore = (routerProps) => {
         let filteredStore = storeItems.filter(item => item.title.toLowerCase().trim().replace(/ /g, "-") === routerProps.match.params.title)[0];
@@ -95,12 +100,14 @@ function App() {
     return (
         <StyledApp>
             <ThemeProvider theme={theme}>
-                <GlobalStyles />
+            <GlobalStyles />
                 <Menu menuItems={menuItems} />
                 <Switch>
                     <Route path="/dash" component={() => <Dashboard userData={userData} />} />
                     <Route path="/browse/:title" render={routerProps => checkStore(routerProps)} />
                     <Route path="/browse" component={() => <Browse storeData={storeItems} />} />
+                    <Route path="/radar" component={() => <Radar user={userData} />} />
+                    <Route path="/login" component={() => <Login />} />
                     <Redirect from="/" to="/dash" />
                 </Switch>
             </ThemeProvider>
