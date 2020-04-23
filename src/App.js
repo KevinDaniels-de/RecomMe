@@ -16,6 +16,7 @@ import Browse from './Views/Browse'
 import Store from './Views/Store'
 import Radar from './Views/Radar'
 import Login from './Views/Login'
+import Register from './Views/Register'
 import Menu from './Components/Menu'
 
 const menuItems = [
@@ -108,6 +109,7 @@ function App() {
                     <Route path="/browse" component={() => <Browse storeData={storeItems} />} />
                     <Route path="/radar" component={() => <Radar user={userData} />} />
                     <Route path="/login" component={() => <Login />} />
+                    <Route path="/register" component={() => <Register />} />
                     <Redirect from="/" to="/dash" />
                 </Switch>
             </ThemeProvider>
