@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid'
 import styled from 'styled-components'
 import theme from './config/theme'
 import {ThemeProvider} from 'styled-components'
-import {Switch, Route, Redirect} from 'react-router-dom'
+import {Switch, Route, Redirect, useLocation} from 'react-router-dom'
 import userAvatar from "./assets/userAvatar.jpg"
 import useAuth from "./services/firebase/useAuth"
 import firebase from "firebase/app" // the firbase core lib
@@ -18,6 +18,19 @@ import Radar from './Views/Radar'
 import Login from './Views/Login'
 import Register from './Views/Register'
 import Menu from './Components/Menu'
+
+const StyledApp = styled.div`
+    background: ${theme.colors.blue.full};
+    padding-bottom: 85px;
+    min-height: 100vh;
+
+    ${theme.mediaQueries.tablet} {}
+
+    ${theme.mediaQueries.desktop} {
+        padding-bottom: 0;
+        padding-left: 250px;
+    }
+`;
 
 const menuItems = [
     {id:uuidv4(), title:"Dash", path:"/dash", svg:"M6 26h16V6H6v20zm0 16h16V30H6v12zm20 0h16V22H26v20zm0-36v12h16V6H26z"},
@@ -71,45 +84,91 @@ const storeItems = [
     ]}
 ];
 
-const userData = {
-    name: "Kevin Daniels",
-    image: userAvatar,
-    experience: 414,
-    recommendations: 8,
-    peopleMet: 134
+const checkStore = (match) => {
+    let filteredStore = storeItems.filter(item => item.title.toLowerCase().trim().replace(/ /g, "-") === match.params.title)[0];
+    return filteredStore ? <Store data={filteredStore} /> : <Redirect to="/dash" />;
 };
 
-const StyledApp = styled.div`
-    background: ${theme.colors.blue.full};
-    padding-bottom: 85px;
-    min-height: 100vh;
+let initAttemptedRoute = '/dash';
 
-    ${theme.mediaQueries.tablet} {}
+function ProtectedRoute({isLoggedIn, children, ...rest}) {
+    initAttemptedRoute  = useLocation().pathname;
 
-    ${theme.mediaQueries.desktop} {
-        padding-bottom: 0;
-        padding-left: 250px;
-    }
-`;
+    return (
+        <Route {...rest}
+            render={
+                ({match, location}) => 
+                    isLoggedIn 
+                        ? location.pathname.split("/")[1] === "browse" && location.pathname.split("/").length > 2
+                            ? checkStore(match)
+                            : children
+                    : <Redirect to={{pathname: "/login", state: {from: location}}} />
+            }
+        />
+    )
+}
+
+function RedirectRoute({isLoggedIn, children, ...rest}) {
+    return (
+        <Route {...rest}
+            render={
+                ({location}) => !isLoggedIn 
+                    ? children 
+                    : <Redirect to={{pathname: initAttemptedRoute, state: {from: location}}} />
+            }
+        />
+    )
+}
 
 function App() {
-    const checkStore = (routerProps) => {
-        let filteredStore = storeItems.filter(item => item.title.toLowerCase().trim().replace(/ /g, "-") === routerProps.match.params.title)[0];
-        return filteredStore ? <Store data={filteredStore} /> : <Redirect to="/dash" />;
+    if(firebase.apps.length === 0)
+        firebase.initializeApp(firebaseConfig);
+
+    const {isAuthenticated, user, signInEmailUser, signInWithProvider, signOut} = useAuth(firebase.auth);
+
+    const handleSignOut = (path) => path === "/logout"
+        ? signOut()
+        : '';
+
+    const userData = {
+        name: user.displayName !== null ? user.displayName : user.email,
+        image: userAvatar,
+        experience: 414,
+        recommendations: 8,
+        peopleMet: 134
     };
 
     return (
         <StyledApp>
             <ThemeProvider theme={theme}>
             <GlobalStyles />
-                <Menu menuItems={menuItems} />
+                <Menu isLoggedIn={isAuthenticated} menuItems={menuItems} emitSignOut={handleSignOut} />
                 <Switch>
-                    <Route path="/dash" component={() => <Dashboard userData={userData} />} />
-                    <Route path="/browse/:title" render={routerProps => checkStore(routerProps)} />
-                    <Route path="/browse" component={() => <Browse storeData={storeItems} />} />
-                    <Route path="/radar" component={() => <Radar user={userData} />} />
-                    <Route path="/login" component={() => <Login />} />
-                    <Route path="/register" component={() => <Register />} />
+                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/dash">
+                        <Dashboard userData={userData} />
+                    </ProtectedRoute>
+
+                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse/:title" />
+
+                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse">
+                        <Browse storeData={storeItems} />
+                    </ProtectedRoute>
+
+                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/radar">
+                        <Radar user={userData} />
+                    </ProtectedRoute>
+
+                    <RedirectRoute isLoggedIn={isAuthenticated} path="/login">
+                        <Login 
+                            signInEmailUser={signInEmailUser}
+                            signInWithProvider={signInWithProvider}
+                        />
+                    </RedirectRoute>
+
+                    <RedirectRoute isLoggedIn={isAuthenticated} path="/register">
+                        <Register />
+                    </RedirectRoute>
+
                     <Redirect from="/" to="/dash" />
                 </Switch>
             </ThemeProvider>

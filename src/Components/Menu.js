@@ -113,12 +113,14 @@ const StyledMenu = styled.nav`
 `;
 
 function MenuItem(props) {
-    const {path, svg, title} = props;
+    const {emitSignOut, path, svg, title} = props;
     const location = useLocation();
     const isActive = location.pathname.split('/')[1] === title.toLowerCase() ? true : false;
 
+    const handleClick = () => emitSignOut(path);
+
     return (
-        <Link to={path} className={`nav-item${isActive ? " active" : ""}`}>
+        <Link to={path} className={`nav-item${isActive ? " active" : ""}`} onClick={handleClick}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                 <path d={svg}/>
             </svg>
@@ -129,13 +131,17 @@ function MenuItem(props) {
 }
 
 function Menu(props) {
-    const {menuItems} = props;
+    const {emitSignOut, isLoggedIn, menuItems} = props;
+
+    const handleEmit = (path) => emitSignOut(path);
 
     return (
-        <StyledMenu>
-            <img src={logo} alt="Navigation Icon" />
-            {menuItems.map(item => <MenuItem key={item.id} path={item.path} svg={item.svg} title={item.title} />)}
-        </StyledMenu>
+        isLoggedIn ? (
+            <StyledMenu>
+                <img src={logo} alt="Navigation Icon" />
+                {menuItems.map(item => <MenuItem key={item.id} path={item.path} svg={item.svg} title={item.title} emitSignOut={handleEmit} />)}
+            </StyledMenu>
+        ) : ''
     );
 }
 
