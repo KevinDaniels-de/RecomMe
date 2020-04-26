@@ -3,15 +3,9 @@ import styled from 'styled-components'
 import iconFacebook from "../assets/icon-facebook.svg"
 import iconGoogle from "../assets/icon-google.svg"
 import {Link} from 'react-router-dom'
-import { useForm } from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 
 import * as yup from 'yup';
-import useAuth from "../services/firebase/useAuth";
-
-import firebase from "firebase/app"; // the firbase core lib
-import "firebase/auth"; // specific products
-import "firebase/firestore";
-import firebaseConfig from "../config/firebase"; // the firebase config we set up ealier
 
 function Login(props) {
     const StyledLoginContainer = styled.section``;
@@ -112,10 +106,10 @@ function Login(props) {
         <StyledLoginContainer>
             <StyledHeadline>Login</StyledHeadline>
             <StyledForm onSubmit={handleSubmit(onSubmit)}>
-                <input type="text" name="email" placeholder="E-Mail" ref={register} value="asd@asd.de" />
+                <input type="text" name="email" placeholder="E-Mail" ref={register} />
                 <StyledErrorLabel>{errors.email && errors.email.message}</StyledErrorLabel>
 
-                <input type="text" name="password" placeholder="Password" ref={register} value="123456" />
+                <input type="text" name="password" placeholder="Password" ref={register} />
                 <StyledErrorLabel>{errors.password && errors.password.message}</StyledErrorLabel>
 
                 <input type="submit" value="Send" />

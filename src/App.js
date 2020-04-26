@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {v4 as uuidv4} from 'uuid'
 import styled from 'styled-components'
 import theme from './config/theme'
@@ -9,6 +9,8 @@ import useAuth from "./services/firebase/useAuth"
 import firebase from "firebase/app" // the firbase core lib
 import "firebase/auth" // specific products
 import firebaseConfig from "./config/firebase" // the firebase config we set up ealier
+import "firebase/firestore"
+import useCheckin from "./services/firebase/useCheckin"
 
 import GlobalStyles from './config/GlobalStyles'
 import Dashboard from './Views/Dashboard'
@@ -124,19 +126,47 @@ function App() {
     if(firebase.apps.length === 0)
         firebase.initializeApp(firebaseConfig);
 
-    const {isAuthenticated, user, signInEmailUser, signInWithProvider, signOut} = useAuth(firebase.auth);
+    const {isAuthenticated, user, signInEmailUser, signInWithProvider, signOut, createEmailUser} = useAuth(firebase.auth);
+
+    const {
+        createCheckin,
+        getCurrentUser,
+        readCheckins
+    } = useCheckin(firebase.firestore);
 
     const handleSignOut = (path) => path === "/logout"
         ? signOut()
         : '';
 
-    const userData = {
+    const handleCreateEmailUser = async (email, password, username) => {
+        createEmailUser(email, password, username);
+        createCheckin({
+            userId: user.uid,
+            name: username,
+            image: userAvatar,
+            experience: 666,
+            recommendations: 0,
+            peopleMet: 0
+        });
+    };
+
+    let userData = {
         name: user.displayName !== null ? user.displayName : user.email,
         image: userAvatar,
-        experience: 414,
+        experience: 150,
         recommendations: 8,
         peopleMet: 134
     };
+
+    useEffect(() => {        
+        if(user.uid != null)
+            getCurrentUser(user.uid)
+                .then(promise => promise.forEach(boom => {
+                    console.log("User");
+                    console.log(boom.data());
+                    return;
+                }))
+    }, [user]);
 
     return (
         <StyledApp>
@@ -144,6 +174,17 @@ function App() {
             <GlobalStyles />
                 <Menu isLoggedIn={isAuthenticated} menuItems={menuItems} emitSignOut={handleSignOut} />
                 <Switch>
+                    <RedirectRoute isLoggedIn={isAuthenticated} path="/login">
+                        <Login 
+                            signInEmailUser={signInEmailUser}
+                            signInWithProvider={signInWithProvider}
+                        />
+                    </RedirectRoute>
+
+                    <RedirectRoute isLoggedIn={isAuthenticated} path="/register">
+                        <Register createEmailUser={handleCreateEmailUser} />
+                    </RedirectRoute>
+
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/dash">
                         <Dashboard userData={userData} />
                     </ProtectedRoute>
@@ -157,17 +198,6 @@ function App() {
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/radar">
                         <Radar user={userData} />
                     </ProtectedRoute>
-
-                    <RedirectRoute isLoggedIn={isAuthenticated} path="/login">
-                        <Login 
-                            signInEmailUser={signInEmailUser}
-                            signInWithProvider={signInWithProvider}
-                        />
-                    </RedirectRoute>
-
-                    <RedirectRoute isLoggedIn={isAuthenticated} path="/register">
-                        <Register />
-                    </RedirectRoute>
 
                     <Redirect from="/" to="/dash" />
                 </Switch>

@@ -9,6 +9,12 @@ function useAuth(fbAuth) {
 
     const signInEmailUser = (email, password) => fbAuth().signInWithEmailAndPassword(email, password);
 
+    const createEmailUser = (email, password, username) => 
+        fbAuth().createUserWithEmailAndPassword(email, password)
+            .then(userData => 
+                userData.user.updateProfile({displayName: username})
+            );
+
     const signOut = () => fbAuth().signOut();
 
     const signInWithProvider = provider => {
@@ -27,7 +33,7 @@ function useAuth(fbAuth) {
     };
 
     fbAuth().onAuthStateChanged(fbUser => {
-        if(fbUser) {
+        if(fbUser) {                        
             setIsAuthenticated(true);
             setUser(fbUser);
             return;
@@ -41,7 +47,8 @@ function useAuth(fbAuth) {
         signInWithProvider,
         isAuthenticated,
         user,
-        signOut
+        signOut,
+        createEmailUser
     };
 }
 
