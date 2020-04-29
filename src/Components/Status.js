@@ -18,11 +18,11 @@ const StyledStatus = styled.div`
 
 
 function Status(props) {
-    const {name, image, experience} = props;
+    const {name, image, experience, multiplicator} = props;
 
     return (
         <StyledStatus>
-            <Profile name={name} image={image} experience={experience} />
+            <Profile name={name} image={image} experience={experience} multiplicator={multiplicator} />
         </StyledStatus>
     )
 }

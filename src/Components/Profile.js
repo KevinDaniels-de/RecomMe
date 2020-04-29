@@ -87,7 +87,7 @@ const StyledActivityItem = styled.div`
 `;
 
 function Profile(props) {
-    const {name, image, experience, recommendations, peopleMet} = props;
+    const {name, image, experience, multiplicator, recommendations, peopleMet} = props;
 
     return (
         <StyledProfile>
@@ -96,7 +96,7 @@ function Profile(props) {
             </StyledImageOuter>
             <StyledInfoContainer>
                 <h5>{name}</h5>
-                <Level experience={experience} />
+                <Level experience={experience} multiplicator={multiplicator} />
             </StyledInfoContainer>
             <StyledActivityContainer>
                 <StyledActivityItem className="recommendation">

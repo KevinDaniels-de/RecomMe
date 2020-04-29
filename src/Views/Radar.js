@@ -1,10 +1,10 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import userAvatar from "../assets/userAvatar.jpg";
 
 import Level from '../Components/Level'
 
-function Radar({user}) {
+function Radar({user, multiplicator, changeExperience}) {
 
     const StyledRadarContainer = styled.div``;
 
@@ -51,43 +51,62 @@ function Radar({user}) {
         z-index: 7;
     `;
 
-    const otherUsers = [
+    const [exp, setExp] = useState(user.experience);
+    const [otherUsers, setOtherUsers] = useState([
         {
             image: userAvatar,
+            show: true
         },
         {
             image: userAvatar,
+            show: true
         },
         {
             image: userAvatar,
+            show: true
         },
         {
             image: userAvatar,
+            show: true
         },
         {
             image: userAvatar,
+            show: true
         },
         {
             image: userAvatar,
+            show: true
         },
         {
             image: userAvatar,
+            show: true
         },
         {
             image: userAvatar,
+            show: true
+        },
+        {
+            image: userAvatar,
+            show: true
         }
-    ];
+    ]);
 
-    const getRandomCoordinate = () => {
-        let leftInt = Math.floor(Math.random() * ((window.innerWidth - 20) - 20) + 20);
-        let topInt = Math.floor(Math.random() * ((window.innerHeight - 105) - 20) + 20);
+    const generateRandomCoordinates = (counter) => {
+        let coordArray = [];
 
-        return {top:topInt, left:leftInt};
+        for (let i = 0; i < counter; i++) {
+            let leftInt = Math.floor(Math.random() * ((window.innerWidth - 20) - 20) + 20);
+            let topInt = Math.floor(Math.random() * ((window.innerHeight - 105) - 20) + 20);
+    
+            coordArray.push({top: topInt, left: leftInt});
+        }
+
+        return coordArray;
     };
 
-    const [exp, setExp] = useState(user.experience);
+    const [coords, setCoords] = useState(generateRandomCoordinates(otherUsers.length));
 
-    const handleClick = (e) => {
+    const handleClick = (i, e) => {
         e.preventDefault();
 
         let userCoords = {
@@ -99,19 +118,31 @@ function Radar({user}) {
         e.target.style.left = userCoords.left+"px";
 
         setTimeout(() => {
-            let currentExp = exp;
-            setExp(currentExp += 10);
+            otherUsers[i].show = false;
+
+            let newCoords = coords;
+            newCoords[i].top = userCoords.top;
+            newCoords[i].left = userCoords.left;
+
+            setCoords(newCoords);
+            setExp(exp + 5);
+            changeExperience(exp + 5);
         }, 300);
     };
+
+    useEffect(() => {
+        setExp(user.experience);
+    }, [user]);
 
     return (
         <StyledRadarContainer>
             <StyledLevel>
-                <Level experience={exp} />
+                <Level experience={exp} multiplicator={multiplicator} />
             </StyledLevel>
             <StyledRadarContent>
-                {otherUsers.map((item, i) =>
-                    <StyledOtherUser onClick={handleClick} key={i} src={item.image} top={getRandomCoordinate().top} left={getRandomCoordinate().left} />
+                {otherUsers.map((item, i) => item.show 
+                    ? <StyledOtherUser onClick={e => handleClick(i, e)} key={i} src={item.image} top={coords[i].top} left={coords[i].left} />
+                    : ''
                 )}
                 <StyledUser className="own-user" src={user.image} alt="User" />
             </StyledRadarContent>

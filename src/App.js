@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import {v4 as uuidv4} from 'uuid'
 import styled from 'styled-components'
 import theme from './config/theme'
 import {ThemeProvider} from 'styled-components'
 import {Switch, Route, Redirect, useLocation} from 'react-router-dom'
-import userAvatar from "./assets/userAvatar.jpg"
+import userAvatarPlaceholder from "./assets/avatar-placeholder.png"
 import useAuth from "./services/firebase/useAuth"
 import firebase from "firebase/app" // the firbase core lib
 import "firebase/auth" // specific products
@@ -20,6 +20,7 @@ import Radar from './Views/Radar'
 import Login from './Views/Login'
 import Register from './Views/Register'
 import Menu from './Components/Menu'
+import Loader from './Components/Loader'
 
 const StyledApp = styled.div`
     background: ${theme.colors.blue.full};
@@ -104,7 +105,7 @@ function ProtectedRoute({isLoggedIn, children, ...rest}) {
                         ? location.pathname.split("/")[1] === "browse" && location.pathname.split("/").length > 2
                             ? checkStore(match)
                             : children
-                    : <Redirect to={{pathname: "/login", state: {from: location}}} />
+                        : <Redirect to={{pathname: "/login", state: {from: location}}} />
             }
         />
     )
@@ -126,50 +127,79 @@ function App() {
     if(firebase.apps.length === 0)
         firebase.initializeApp(firebaseConfig);
 
-    const {isAuthenticated, user, signInEmailUser, signInWithProvider, signOut, createEmailUser} = useAuth(firebase.auth);
+    const {isAuthenticated, user, signInEmailUser, signInWithProvider, signOut, createEmailUser, isLoading} = useAuth(firebase.auth);
 
     const {
         createCheckin,
         getCurrentUser,
+        updateCurrentUser,
         readCheckins
     } = useCheckin(firebase.firestore);
 
-    const handleSignOut = (path) => path === "/logout"
+    const [userData, setUserData] = useState({
+        id: "",
+        name: "",
+        image: "",
+        experience: 0,
+        recommendations: 0,
+        peopleMet: 0
+    });
+
+    const changeExperience = (newEXP) => {
+        let updatedUserData = userData;
+        updatedUserData.experience = newEXP;
+        setUserData(updatedUserData);
+        updateCurrentUser(updatedUserData, updatedUserData.docId)
+    };
+
+    const handleSignOut = path => path === "/logout"
         ? signOut()
         : '';
 
-    const handleCreateEmailUser = async (email, password, username) => {
+    const handleCreateEmailUser = (email, password, username) => 
         createEmailUser(email, password, username);
-        createCheckin({
-            userId: user.uid,
-            name: username,
-            image: userAvatar,
-            experience: 666,
-            recommendations: 0,
-            peopleMet: 0
-        });
-    };
 
-    let userData = {
-        name: user.displayName !== null ? user.displayName : user.email,
-        image: userAvatar,
-        experience: 150,
-        recommendations: 8,
-        peopleMet: 134
-    };
+    useEffect(() => {
+        if(user.uid != null) {                   
+            getCurrentUser(user.uid).then(searchedUser => {       
+                // No User found -> Create New         
+                if(searchedUser == null) {                    
+                    createCheckin({
+                        userId: user.uid,
+                        name: user.displayName,
+                        image: user.photoURL ? user.photoURL : userAvatarPlaceholder,
+                        experience: 0,
+                        recommendations: 0,
+                        peopleMet: 0
+                    });
 
-    useEffect(() => {        
-        if(user.uid != null)
-            getCurrentUser(user.uid)
-                .then(promise => promise.forEach(boom => {
-                    console.log("User");
-                    console.log(boom.data());
-                    return;
-                }))
+                    setUserData({
+                        userId: user.uid,
+                        name: user.displayName,
+                        image: user.photoURL ? user.photoURL : userAvatarPlaceholder,
+                        experience: 0,
+                        recommendations: 0,
+                        peopleMet: 0
+                    });
+                }
+
+                // User found - Get Data
+                else
+                    setUserData({
+                        userId: searchedUser.userId,
+                        name: searchedUser.name,
+                        image: searchedUser.image,
+                        experience: searchedUser.experience,
+                        recommendations: searchedUser.recommendations,
+                        peopleMet: searchedUser.peopleMet
+                    });
+            });
+        }
     }, [user]);
 
-    return (
-        <StyledApp>
+    return (isLoading 
+        ? <Loader /> 
+        : <StyledApp>
             <ThemeProvider theme={theme}>
             <GlobalStyles />
                 <Menu isLoggedIn={isAuthenticated} menuItems={menuItems} emitSignOut={handleSignOut} />
@@ -186,7 +216,7 @@ function App() {
                     </RedirectRoute>
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/dash">
-                        <Dashboard userData={userData} />
+                        <Dashboard userData={userData} multiplicator={1} />
                     </ProtectedRoute>
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse/:title" />
@@ -196,7 +226,7 @@ function App() {
                     </ProtectedRoute>
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/radar">
-                        <Radar user={userData} />
+                        <Radar user={userData} multiplicator={1} changeExperience={changeExperience} />
                     </ProtectedRoute>
 
                     <Redirect from="/" to="/dash" />

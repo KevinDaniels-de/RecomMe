@@ -35,13 +35,13 @@ const StyledDashboard = styled.section`
 `;
 
 function Dashboard(props) {
-    const {userData} = props;
+    const {userData, multiplicator} = props;
     const {name, image, experience, recommendations, peopleMet} = userData;
 
     return (
         <StyledDashboard>
             <Container className="profile" size={100}>
-                <Status name={name} image={image} experience={experience} recommendations={recommendations} peopleMet={peopleMet} />
+                <Status name={name} image={image} experience={experience} multiplicator={multiplicator} recommendations={recommendations} peopleMet={peopleMet} />
             </Container>
 
             <Container className="main" size={100}>

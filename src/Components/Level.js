@@ -45,9 +45,8 @@ const getLevel = (exp, bonus) => {
     };
 }
 
-function Level(props) {
-    const {experience} = props;
-    const {level, percentage} = getLevel(experience, 1);
+function Level({experience, multiplicator}) {
+    const {level, percentage} = getLevel(experience, multiplicator);
 
     return (
         <StyledLevelContainer>

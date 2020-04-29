@@ -68,14 +68,8 @@ function Register(props) {
     const {register, handleSubmit,  errors} = useForm({validationSchema:mailingListSchema});
 
     const onSubmit = async data => {
-        const {email, password, username} = data;
-
-        try {
-            const user = await createEmailUser(email, password, username);
-            console.log(user);
-        } catch (error) {
-            console.log(error);
-        }
+        const {email, password, username} = data;        
+        createEmailUser(email, password, username);
     };
 
     return (
