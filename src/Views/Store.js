@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 import Rellax from 'rellax'
 import {Link} from 'react-router-dom'
@@ -6,8 +6,8 @@ import backButton from "../assets/back.svg";
 
 import Container from '../Components/Container'
 
-function Store({data}) {
-    const {title, logo, interior, vouchers} = data;
+function Store({data, recommendations, onClick}) {
+    const {id, title, logo, interior, vouchers} = data;
 
     const StyledStore = styled.section`
         position: relative;
@@ -101,8 +101,40 @@ function Store({data}) {
 
     const StyledVoucherTitle = styled.h6`
         text-align: center;
-        color: ${({theme}) => theme.colors.royal};
+        color: ${({theme}) => theme.colors.black};
+
+        &.clickable {
+            background: ${({theme}) => theme.colors.royal};
+        }
     `;
+
+    const StyledRecommButton = styled.button`
+        color: ${({theme}) => theme.colors.white};
+        background: ${({theme}) => theme.colors.black};
+        border: none;
+        max-width: 320px;
+        width: 100%;
+        border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 5px;
+        padding: 20px 40px;
+        margin: 50px auto 0 auto;
+        display: block;
+        box-shadow: 6px 6px 10px ${({theme}) => theme.colors.shades.dark};
+        font-size: 1.2rem;
+
+        &.clickable {
+            background: ${({theme}) => theme.colors.royal};
+        }
+    `;
+
+    const [isLoading, setLoading] = useState(true);
+    const [recButton, setRecButton] = useState("Recommend");
+
+    const calcTimeDiff = (time) => {
+        let countdown = 172800 - (Math.floor(new Date() / 1000) - time)
+        return `${Math.floor(countdown/60/60)}:${Math.floor(countdown/60/60)}:${Math.floor(countdown%60%60)}`;
+    };
 
     useEffect(() => {
         const rellax = new Rellax('.rellax', {
@@ -113,7 +145,23 @@ function Store({data}) {
             vertical: true,
             horizontal: false
         });
+
+        if(recommendations.length > 0) {
+            let foundRecom = recommendations.filter(obj => obj.storeId == id);
+
+            if(foundRecom.length > 0) {
+                setRecButton(Math.floor(new Date() / 1000) - foundRecom[0].date.seconds < 172800 ? calcTimeDiff(foundRecom[0].date.seconds) : "Redeem");
+
+                setInterval(() => {
+                    setRecButton(Math.floor(new Date() / 1000) - foundRecom[0].date.seconds < 172800 ? calcTimeDiff(foundRecom[0].date.seconds) : "Redeem");
+                }, 1000);
+            }
+        }
+
+        setLoading(false);
     });
+
+    const handleClick = () => recButton == "Recommend" ? onClick() : '';
 
     return (
         <StyledStore>
@@ -131,6 +179,7 @@ function Store({data}) {
                 <StyledTitle>{title}</StyledTitle>
 
                 <StyledVoucherTitle>Vouchers</StyledVoucherTitle>
+
                 {vouchers.map(({lv, title}, i) => 
                     <Container className="voucher-ctn" key={i} size={100}>
                         <b>Lv {lv}</b>
@@ -138,6 +187,8 @@ function Store({data}) {
                         <div>Redeem</div>
                     </Container>
                 )}
+
+                <StyledRecommButton className={recButton == "Recommend" ? "clickable" : ""} onClick={handleClick}>{recButton}</StyledRecommButton>
             </StyledContent>
         </StyledStore>
     )

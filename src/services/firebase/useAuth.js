@@ -8,10 +8,22 @@ function useAuth(fbAuth) {
     const googleProvider = new fbAuth.GoogleAuthProvider();
     const facebookProvider = new fbAuth.FacebookAuthProvider();
 
+    fbAuth().onAuthStateChanged(fbUser => {
+        // setLoading(false);
+
+        if(fbUser) {                   
+            setIsAuthenticated(true);
+            setUser(fbUser);
+            return;
+        }
+
+        setIsAuthenticated(false);
+    });
+
     const signInEmailUser = (email, password) => fbAuth().signInWithEmailAndPassword(email, password);
 
-    const createEmailUser = async (email, password, username) => 
-        await fbAuth().createUserWithEmailAndPassword(email, password)
+    const createEmailUser = (email, password, username) => 
+        fbAuth().createUserWithEmailAndPassword(email, password)
             .then(userData => userData.user.updateProfile({displayName: username}));
 
     const signOut = () => fbAuth().signOut();
@@ -31,18 +43,6 @@ function useAuth(fbAuth) {
         }
     };
 
-    fbAuth().onAuthStateChanged(fbUser => {
-        setLoading(false);
-
-        if(fbUser) {                        
-            setIsAuthenticated(true);
-            setUser(fbUser);
-            return;
-        }
-
-        setIsAuthenticated(false);
-    });
-
     return {
         signInEmailUser,
         signInWithProvider,
@@ -50,7 +50,8 @@ function useAuth(fbAuth) {
         user,
         signOut,
         createEmailUser,
-        isLoading
+        isLoading,
+        setLoading
     };
 }
 

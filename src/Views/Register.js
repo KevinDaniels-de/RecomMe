@@ -68,14 +68,16 @@ function Register(props) {
     const {register, handleSubmit,  errors} = useForm({validationSchema:mailingListSchema});
 
     const onSubmit = async data => {
-        const {email, password, username} = data;        
-        createEmailUser(email, password, username);
+        const {email, password, username, image} = data;        
+        createEmailUser(email, password, username, image);
     };
 
     return (
         <StyledRegisterContainer>
             <StyledHeadline>Register</StyledHeadline>
             <StyledForm onSubmit={handleSubmit(onSubmit)}>
+                <input type="file" name="image" placeholder="Upload Image" ref={register} />
+
                 <input type="text" name="username" placeholder="Username" ref={register} />
                 <StyledErrorLabel>{errors.username && errors.username.message}</StyledErrorLabel>
 

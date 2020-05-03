@@ -57,8 +57,7 @@ const StyledContent = styled.div`
     }
 `;
 
-function Browse(props) {
-    const {storeData} = props;
+function Browse({stores}) {
 
     return (
         <StyledBrowse>
@@ -68,7 +67,7 @@ function Browse(props) {
             </StyledBrowseTitle>
 
             <StyledContent>
-                {storeData.map(item => 
+                {stores.map(item => 
                     <Container key={item.id} size={47} className="store-item">
                         <Link to={`/browse/${item.title.toLowerCase().trim().replace(/ /g, "-")}`}>
                             <StyledLogo src={item.logo} />

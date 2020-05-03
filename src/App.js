@@ -10,7 +10,7 @@ import firebase from "firebase/app" // the firbase core lib
 import "firebase/auth" // specific products
 import firebaseConfig from "./config/firebase" // the firebase config we set up ealier
 import "firebase/firestore"
-import useCheckin from "./services/firebase/useCheckin"
+import useDatabase from "./services/firebase/useDatabase"
 
 import GlobalStyles from './config/GlobalStyles'
 import Dashboard from './Views/Dashboard'
@@ -42,59 +42,39 @@ const menuItems = [
     {id:uuidv4(), title:"Logout", path:"/logout", svg:"M29.17 16L24 21.17 18.83 16 16 18.83 21.17 24 16 29.17 18.83 32 24 26.83 29.17 32 32 29.17 26.83 24 32 18.83 29.17 16zM24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm0 36c-8.82 0-16-7.18-16-16S15.18 8 24 8s16 7.18 16 16-7.18 16-16 16z"}
 ];
 
-const storeItems = [
-    {id:uuidv4(), title:"Subway", logo:"/stores/subway.png", interior:"/stores/interior.jpg", vouchers: [
-        {lv:5, title:"Free Upgrade 1", code:uuidv4()},
-        {lv:8, title:"Free Upgrade 2", code:uuidv4()},
-        {lv:10, title:"Free Upgrade 3", code:uuidv4()},
-        {lv:12, title:"Free Upgrade 4", code:uuidv4()},
-        {lv:15, title:"Free Upgrade 5", code:uuidv4()}
-    ]},
-    {id:uuidv4(), title:"Pizza Express", logo:"/stores/pizza-express.png", interior:"/stores/interior.jpg", vouchers: [
-        {lv:5, title:"Free Upgrade 1", code:uuidv4()},
-        {lv:8, title:"Free Upgrade 2", code:uuidv4()},
-        {lv:10, title:"Free Upgrade 3", code:uuidv4()},
-        {lv:12, title:"Free Upgrade 4", code:uuidv4()},
-        {lv:15, title:"Free Upgrade 5", code:uuidv4()}
-    ]},
-    {id:uuidv4(), title:"TGI Fridays", logo:"/stores/tgi-fridays.png", interior:"/stores/interior.jpg", vouchers: [
-        {lv:5, title:"Free Upgrade 1", code:uuidv4()},
-        {lv:8, title:"Free Upgrade 2", code:uuidv4()},
-        {lv:10, title:"Free Upgrade 3", code:uuidv4()},
-        {lv:12, title:"Free Upgrade 4", code:uuidv4()},
-        {lv:15, title:"Free Upgrade 5", code:uuidv4()}
-    ]},
-    {id:uuidv4(), title:"Nandos", logo:"/stores/nandos.png", interior:"/stores/interior.jpg", vouchers: [
-        {lv:5, title:"Free Upgrade 1", code:uuidv4()},
-        {lv:8, title:"Free Upgrade 2", code:uuidv4()},
-        {lv:10, title:"Free Upgrade 3", code:uuidv4()},
-        {lv:12, title:"Free Upgrade 4", code:uuidv4()},
-        {lv:15, title:"Free Upgrade 5", code:uuidv4()}
-    ]},
-    {id:uuidv4(), title:"Burger King", logo:"/stores/burger-king.png", interior:"/stores/interior.jpg", vouchers: [
-        {lv:5, title:"Free Upgrade 1", code:uuidv4()},
-        {lv:8, title:"Free Upgrade 2", code:uuidv4()},
-        {lv:10, title:"Free Upgrade 3", code:uuidv4()},
-        {lv:12, title:"Free Upgrade 4", code:uuidv4()},
-        {lv:15, title:"Free Upgrade 5", code:uuidv4()}
-    ]},
-    {id:uuidv4(), title:"Starbucks", logo:"/stores/starbucks.png", interior:"/stores/interior.jpg", vouchers: [
-        {lv:5, title:"Free Upgrade 1", code:uuidv4()},
-        {lv:8, title:"Free Upgrade 2", code:uuidv4()},
-        {lv:10, title:"Free Upgrade 3", code:uuidv4()},
-        {lv:12, title:"Free Upgrade 4", code:uuidv4()},
-        {lv:15, title:"Free Upgrade 5", code:uuidv4()}
-    ]}
-];
-
-const checkStore = (match) => {
-    let filteredStore = storeItems.filter(item => item.title.toLowerCase().trim().replace(/ /g, "-") === match.params.title)[0];
-    return filteredStore ? <Store data={filteredStore} /> : <Redirect to="/dash" />;
-};
-
 let initAttemptedRoute = '/dash';
 
-function ProtectedRoute({isLoggedIn, children, ...rest}) {
+function ProtectedRoute({isLoggedIn, children, userData, stores, ...rest}) {
+    const {createNewRecommendation, getAllUserStoreRecommendations} = useDatabase(firebase.firestore);
+
+    const [storeRecommendations, setStoreRecommendations] = useState([]);
+
+    const handleStoreRecommendations = (storeId, userId) => {
+        createNewRecommendation(storeId, userId)
+            .then(() => updateUserRecommendations(storeId, userId));
+    };
+
+    const updateUserRecommendations = (storeId, userId) => {                
+        getAllUserStoreRecommendations(storeId, userId)
+            .then(promise => {
+                let allStoreRecommendations = [];
+
+                promise.forEach(entry => {
+                    allStoreRecommendations.push(entry.data());
+                });
+
+                if(promise.size != 0)
+                    setStoreRecommendations([...allStoreRecommendations]);
+            });
+    };
+
+    const checkStore = (filteredStore) => {
+        if(storeRecommendations.length == 0)
+            updateUserRecommendations(filteredStore.id, userData.userId);
+
+        return filteredStore ? <Store data={filteredStore} recommendations={storeRecommendations} onClick={() => handleStoreRecommendations(filteredStore.id, userData.userId)} /> : <Redirect to="/dash" />;
+    };
+
     initAttemptedRoute  = useLocation().pathname;
 
     return (
@@ -103,7 +83,7 @@ function ProtectedRoute({isLoggedIn, children, ...rest}) {
                 ({match, location}) => 
                     isLoggedIn 
                         ? location.pathname.split("/")[1] === "browse" && location.pathname.split("/").length > 2
-                            ? checkStore(match)
+                            ? checkStore(stores.filter(item => item.title.toLowerCase().trim().replace(/ /g, "-") === match.params.title)[0])
                             : children
                         : <Redirect to={{pathname: "/login", state: {from: location}}} />
             }
@@ -127,60 +107,101 @@ function App() {
     if(firebase.apps.length === 0)
         firebase.initializeApp(firebaseConfig);
 
-    const {isAuthenticated, user, signInEmailUser, signInWithProvider, signOut, createEmailUser, isLoading} = useAuth(firebase.auth);
+    const {isAuthenticated, user, signInEmailUser, signInWithProvider, signOut, createEmailUser, isLoading, setLoading} = useAuth(firebase.auth);
+    const {createNewUser, getCurrentUser, updateCurrentUser, getAllStores} = useDatabase(firebase.firestore);
 
-    const {
-        createCheckin,
-        getCurrentUser,
-        updateCurrentUser,
-        readCheckins
-    } = useCheckin(firebase.firestore);
+    const [userData, setUserData] = useState({userId: "", name: "", image: "", experience: 0, recommendations: 0, peopleMet: 0, coords: {lat:0, long:0}});
+    const [stores, setStores] = useState([]);
+    const [isMounted, setMounted] = useState(false);
 
-    const [userData, setUserData] = useState({
-        id: "",
-        name: "",
-        image: "",
-        experience: 0,
-        recommendations: 0,
-        peopleMet: 0
-    });
+    useEffect(() => {
+        if(!isMounted && isAuthenticated) {
+            navigator.geolocation.watchPosition(
+                pos => {
+                    // console.log(userData);
+                    if(pos.coords.latitude != userData.coords.lat || pos.coords.longitude != userData.coords.long) {
+                        let coordUserData = userData;
+                        coordUserData.coords.lat = pos.coords.latitude;
+                        coordUserData.coords.long = pos.coords.longitude;
+
+                        setUserData(coordUserData);
+                        updateCurrentUser(userData, userData.userId);
+
+                        // Radius
+                        // lat: 0.003
+                        // long: 0.08
+                    }
+                },
+                err => console.log(err), 
+                {timeout: 5000}
+            );
+            
+            getAllStores().then(promise => {
+                let storeArr = [];
+        
+                promise.forEach(store => {
+                    storeArr.push(store.data());
+                });
+        
+                setStores(storeArr);
+            }).then(() => {
+                setLoading(false);
+                setMounted(true);
+            });
+        }
+    }, [userData]);
 
     const changeExperience = (newEXP) => {
         let updatedUserData = userData;
         updatedUserData.experience = newEXP;
         setUserData(updatedUserData);
-        updateCurrentUser(updatedUserData, updatedUserData.docId)
+        updateCurrentUser(updatedUserData, updatedUserData.docId);
     };
 
     const handleSignOut = path => path === "/logout"
         ? signOut()
         : '';
 
-    const handleCreateEmailUser = (email, password, username) => 
-        createEmailUser(email, password, username);
+    const handleCreateEmailUser = (email, password, username, image) => {
+        const reader = new FileReader();
+
+        reader.readAsDataURL(image[0]);
+
+        reader.onload = async() => {
+            setUserData({
+                userId: "",
+                name: username,
+                image: reader.result ? reader.result : userAvatarPlaceholder,
+                experience: 0,
+                recommendations: 0,
+                peopleMet: 0,
+                coords: {lat: 0, long: 0}
+            });
+    
+            createEmailUser(email, password, username);
+        };
+    }
 
     useEffect(() => {
-        if(user.uid != null) {                   
+        // console.log(user);
+        if(user.uid != null) {
             getCurrentUser(user.uid).then(searchedUser => {       
-                // No User found -> Create New         
-                if(searchedUser == null) {                    
-                    createCheckin({
+                // No User found -> Create New
+                // console.log(searchedUser);
+                
+                if(searchedUser == null) {
+                    let newUserData = {
                         userId: user.uid,
-                        name: user.displayName,
-                        image: user.photoURL ? user.photoURL : userAvatarPlaceholder,
+                        name: user.displayName ? user.displayName : userData.name,
+                        image: user.photoURL ? user.photoURL : userData.image,
                         experience: 0,
                         recommendations: 0,
-                        peopleMet: 0
-                    });
+                        peopleMet: 0,
+                        coords: {lat: 0, long: 0}
+                    };
 
-                    setUserData({
-                        userId: user.uid,
-                        name: user.displayName,
-                        image: user.photoURL ? user.photoURL : userAvatarPlaceholder,
-                        experience: 0,
-                        recommendations: 0,
-                        peopleMet: 0
-                    });
+                    setUserData(newUserData);
+                    createNewUser(newUserData);
                 }
 
                 // User found - Get Data
@@ -191,7 +212,8 @@ function App() {
                         image: searchedUser.image,
                         experience: searchedUser.experience,
                         recommendations: searchedUser.recommendations,
-                        peopleMet: searchedUser.peopleMet
+                        peopleMet: searchedUser.peopleMet,
+                        coords: {lat: searchedUser.coords.lat, long: searchedUser.coords.long}
                     });
             });
         }
@@ -219,10 +241,10 @@ function App() {
                         <Dashboard userData={userData} multiplicator={1} />
                     </ProtectedRoute>
 
-                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse/:title" />
+                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse/:title" userData={userData} stores={stores} />
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse">
-                        <Browse storeData={storeItems} />
+                        <Browse stores={stores} />
                     </ProtectedRoute>
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/radar">
