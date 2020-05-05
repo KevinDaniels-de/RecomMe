@@ -7,10 +7,12 @@ function useDatabase(fStore) {
 
     const getAllStores = async () => await dbStore.get();
 
-    const createNewRecommendation = (storeId, userId) => dbRecommendations.add({storeId: storeId, userId: userId, date: new Date()});
-    const createNewRedeem = (storeId, voucherId, userId) => dbRecommendations.add({storeId: storeId, voucherId: voucherId, userId: userId, date: new Date()});
+    const createNewRecommendation = (storeId, voucherId, userId) => voucherId != null
+        ? dbRecommendations.add({storeId: storeId, voucherId: voucherId, userId: userId, date: new Date()})
+        : dbRecommendations.add({storeId: storeId, userId: userId, date: new Date()});
 
-    const getAllUserStoreRecommendations = (storeId, userId) => dbRecommendations.where("storeId", "==", storeId).where("userId", "==", userId).get();
+    // const getAllUserStoreRecommendations = (storeId, userId) => dbRecommendations.where("storeId", "==", storeId).where("userId", "==", userId).get();
+    const getAllUserStoreRecommendations = (storeId, userId) => dbRecommendations.where("userId", "==", userId).get();
 
     const readCheckins = () => dbUser.get();
 

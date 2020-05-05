@@ -101,11 +101,7 @@ function Store({data, recommendations, onClick}) {
 
     const StyledVoucherTitle = styled.h6`
         text-align: center;
-        color: ${({theme}) => theme.colors.black};
-
-        &.clickable {
-            background: ${({theme}) => theme.colors.royal};
-        }
+        color: ${({theme}) => theme.colors.royal};
     `;
 
     const StyledRecommButton = styled.button`
@@ -128,15 +124,51 @@ function Store({data, recommendations, onClick}) {
         }
     `;
 
-    const [isLoading, setLoading] = useState(true);
-    const [recButton, setRecButton] = useState("Recommend");
+    const StyledVoucherButton = styled.button`
+        color: ${({theme}) => theme.colors.white};
+        background: ${({theme}) => theme.colors.black};
+        border: none;
+        max-width: 100px;
+        width: 100%;
+        border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 5px;
+        padding: 15px;
+        margin-left: auto;
+        display: block;
+        box-shadow: 6px 6px 10px ${({theme}) => theme.colors.shades.dark};
+        font-size: 1rem;
 
-    const calcTimeDiff = (time) => {
-        let countdown = 172800 - (Math.floor(new Date() / 1000) - time)
-        return `${Math.floor(countdown/60/60)}:${Math.floor(countdown/60/60)}:${Math.floor(countdown%60%60)}`;
+        &.clickable {
+            background: ${({theme}) => theme.colors.royal};
+        }
+    `;
+
+    const [btnRecommend, setBtnRecommend] = useState({
+        btn: "Recommend",
+        clickable: true
+    });
+
+    const [btnVouchers, setBtnVouchers] = useState(() => {
+        let voucherArr = [];
+        vouchers.map(voucher => voucherArr.push({...voucher, btn: "Redeem", clickable: true}));
+        return voucherArr;
+    });
+    
+    const [isBtnChecked, setBtnChecked] = useState(false);
+
+    const calcTimeDiff = (timeSeconds, duration) => {
+        const countdown = duration - (Math.floor(new Date() / 1000 - timeSeconds));
+        const calcTime = {
+            hours: countdown/60/60 < 10 ? `0${Math.floor(countdown/60/60)}` : Math.floor(countdown/60/60),
+            minutes: countdown/60%60 < 10 ? `0${Math.floor(countdown/60%60)}` : Math.floor(countdown/60%60),
+            seconds: countdown%60%60 < 10 ? `0${Math.floor(countdown%60%60)}` : Math.floor(countdown%60%60)
+        };
+
+        return `${calcTime.hours}:${calcTime.minutes}:${calcTime.seconds}`;
     };
 
-    useEffect(() => {
+    useEffect(() => {        
         const rellax = new Rellax('.rellax', {
             speed: 4,
             center: false,
@@ -146,22 +178,79 @@ function Store({data, recommendations, onClick}) {
             horizontal: false
         });
 
-        if(recommendations.length > 0) {
-            let foundRecom = recommendations.filter(obj => obj.storeId == id);
+        if(!isBtnChecked && recommendations.length > 0) {
+            // Duration in Seconds (for debug) Normal: 172800
+            const duration = 172800;
 
-            if(foundRecom.length > 0) {
-                setRecButton(Math.floor(new Date() / 1000) - foundRecom[0].date.seconds < 172800 ? calcTimeDiff(foundRecom[0].date.seconds) : "Redeem");
+            const changeBtnRecommend = () => {
+                const recommendFound = recommendations.filter(obj => obj.storeId == id && !obj.voucherId && Math.floor(new Date() / 1000 - obj.date.seconds) <= duration)[0];                
+                
+                if(recommendFound != null) {
+                    const {seconds: recommendSeconds} = recommendFound.date;
+                    
+                    let newBtnRecommend = {...btnRecommend};
+                    const countdownTime = new Date() / 1000 - recommendSeconds;
+                    
+                    if(countdownTime < duration) {
+                        newBtnRecommend.btn = calcTimeDiff(recommendSeconds, duration);
+                        newBtnRecommend.clickable = false;
+                    }
 
-                setInterval(() => {
-                    setRecButton(Math.floor(new Date() / 1000) - foundRecom[0].date.seconds < 172800 ? calcTimeDiff(foundRecom[0].date.seconds) : "Redeem");
-                }, 1000);
-            }
+                    else {
+                        newBtnRecommend.btn = "Recommend";
+                        newBtnRecommend.clickable = true;
+                    }
+
+                    setBtnRecommend(newBtnRecommend);
+                }
+            };
+
+            const changeBtnVouchers = () => {
+                let newBtnVouchers = btnVouchers;
+
+                newBtnVouchers.map(voucher => {
+                    const voucherFound = recommendations.filter(obj => obj.voucherId == voucher.id && Math.floor(new Date() / 1000 - obj.date.seconds) <= duration)[0];
+
+                    if(voucherFound != null) {
+                        const {seconds: voucherSeconds} = voucherFound.date;
+
+                        const countdownTime = new Date() / 1000 - voucherSeconds;
+
+                        if(countdownTime < duration) {
+                            voucher.btn = calcTimeDiff(voucherSeconds, duration);
+                            voucher.clickable = false;
+                        }
+                        
+                        else {
+                            voucher.btn = "Redeem";
+                            voucher.clickable = true;
+                        }
+                    }
+                });
+
+                setBtnVouchers(newBtnVouchers);
+            };
+
+            changeBtnRecommend();
+            changeBtnVouchers();
+
+            console.log("Hallo");
+            
+
+            setInterval(() => {
+                // Recommend Button
+                changeBtnRecommend();
+                changeBtnVouchers();
+            }, 1000);
+
+            setBtnChecked(true);
         }
+    }, [recommendations]);
 
-        setLoading(false);
-    });
-
-    const handleClick = () => recButton == "Recommend" ? onClick() : '';
+    const handleClick = (exp, storeId, voucherId) => {
+        setBtnChecked(false);
+        onClick(exp, storeId, voucherId);
+    };
 
     return (
         <StyledStore>
@@ -180,15 +269,15 @@ function Store({data, recommendations, onClick}) {
 
                 <StyledVoucherTitle>Vouchers</StyledVoucherTitle>
 
-                {vouchers.map(({lv, title}, i) => 
+                {btnVouchers.map(({id:voucherId, lv, title, btn, clickable}, i) => 
                     <Container className="voucher-ctn" key={i} size={100}>
                         <b>Lv {lv}</b>
                         <span>{title}</span>
-                        <div>Redeem</div>
+                        <StyledVoucherButton className={clickable ? "clickable" : ""} onClick={() => clickable ? handleClick(10, id, voucherId) : ''}>{btn}</StyledVoucherButton>
                     </Container>
                 )}
 
-                <StyledRecommButton className={recButton == "Recommend" ? "clickable" : ""} onClick={handleClick}>{recButton}</StyledRecommButton>
+                <StyledRecommButton className={btnRecommend.clickable ? "clickable" : ""} onClick={() => btnRecommend.clickable ? handleClick(20, id) : ''}>{btnRecommend.btn}</StyledRecommButton>
             </StyledContent>
         </StyledStore>
     )

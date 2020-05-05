@@ -44,13 +44,14 @@ const menuItems = [
 
 let initAttemptedRoute = '/dash';
 
-function ProtectedRoute({isLoggedIn, children, userData, stores, ...rest}) {
+function ProtectedRoute({isLoggedIn, children, userData, stores, changeExperience, ...rest}) {
     const {createNewRecommendation, getAllUserStoreRecommendations} = useDatabase(firebase.firestore);
 
     const [storeRecommendations, setStoreRecommendations] = useState([]);
 
-    const handleStoreRecommendations = (storeId, userId) => {
-        createNewRecommendation(storeId, userId)
+    const handleStoreRecommendations = (exp, storeId, voucherId, userId) => {
+        changeExperience(userData.experience + exp);
+        createNewRecommendation(storeId, voucherId, userId)
             .then(() => updateUserRecommendations(storeId, userId));
     };
 
@@ -72,7 +73,7 @@ function ProtectedRoute({isLoggedIn, children, userData, stores, ...rest}) {
         if(storeRecommendations.length == 0)
             updateUserRecommendations(filteredStore.id, userData.userId);
 
-        return filteredStore ? <Store data={filteredStore} recommendations={storeRecommendations} onClick={() => handleStoreRecommendations(filteredStore.id, userData.userId)} /> : <Redirect to="/dash" />;
+        return filteredStore ? <Store data={filteredStore} recommendations={storeRecommendations.filter(storeRec => storeRec.storeId == filteredStore.id)} onClick={(exp, storeId, voucherId) => handleStoreRecommendations(exp, storeId, voucherId, userData.userId)} /> : <Redirect to="/dash" />;
     };
 
     initAttemptedRoute  = useLocation().pathname;
@@ -241,7 +242,7 @@ function App() {
                         <Dashboard userData={userData} multiplicator={1} />
                     </ProtectedRoute>
 
-                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse/:title" userData={userData} stores={stores} />
+                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse/:title" userData={userData} stores={stores} changeExperience={changeExperience}/>
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse">
                         <Browse stores={stores} />
