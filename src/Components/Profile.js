@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
 
 import Level from './Level'
@@ -67,8 +67,7 @@ const StyledActivityItem = styled.div`
         background: rgba(0, 0, 0, 0.75);
         padding: 4px 10px;
         font-size: 1.2rem;
-        opacity: 0;
-        visibility: hidden;
+        transition: opacity .3s;
     }
 
     &.recommendation {
@@ -86,8 +85,33 @@ const StyledActivityItem = styled.div`
     }
 `;
 
-function Profile(props) {
-    const {name, image, experience, multiplicator, recommendations, peopleMet} = props;
+function Profile({name, image, experience, multiplicator, recommendations, peopleMet}) {
+    const [showRecommendation, setShowRecommendation] = useState(false);
+    const [showPeople, setShowPeople] = useState(false);
+
+    useEffect(() => {
+        if(showRecommendation) {
+            setTimeout(() => {
+                document.querySelector('.recommendation span').style.opacity = 0;
+
+                setTimeout(() => {
+                    setShowRecommendation(false);
+                }, 300);
+            }, 3000);
+        }
+    }, [showRecommendation]);
+
+    useEffect(() => {
+        if(showPeople) {
+            window.setTimeout(() => {
+                document.querySelector('.people span').style.opacity = 0;
+
+                window.setTimeout(() => {
+                    setShowPeople(false);
+                }, 300);
+            }, 3000);
+        }
+    }, [showPeople]);
 
     return (
         <StyledProfile>
@@ -99,11 +123,11 @@ function Profile(props) {
                 <Level experience={experience} multiplicator={multiplicator} />
             </StyledInfoContainer>
             <StyledActivityContainer>
-                <StyledActivityItem className="recommendation">
-                    <span>{recommendations} Recommendations</span>
+                <StyledActivityItem className="recommendation" onClick={() => !showRecommendation ? setShowRecommendation(true) : ''}>
+                    {showRecommendation ? <span>{recommendations} Recommendations</span> : ''}
                 </StyledActivityItem>
-                <StyledActivityItem className="people">
-                    <span>Met {peopleMet} People</span>
+                <StyledActivityItem className="people" onClick={() => !showPeople ? setShowPeople(true) : ''}>
+                    {showPeople ? <span>Met {peopleMet} People</span> : ''}
                 </StyledActivityItem>
             </StyledActivityContainer>
         </StyledProfile>

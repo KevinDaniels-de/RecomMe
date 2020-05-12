@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
-import userAvatar from "../assets/userAvatar.jpg";
 
 import Level from '../Components/Level'
 
-function Radar({user, multiplicator, changeExperience}) {
+function Radar({rangeUsers, user, multiplicator, changeExperience}) {
 
     const StyledRadarContainer = styled.div``;
 
@@ -51,60 +50,29 @@ function Radar({user, multiplicator, changeExperience}) {
         z-index: 7;
     `;
 
+    const [isPositionSet, setPositionSet] = useState(false);
+    const [radarUsers, setRadarUsers] = useState(rangeUsers);
     const [exp, setExp] = useState(user.experience);
-    const [otherUsers, setOtherUsers] = useState([
-        {
-            image: userAvatar,
-            show: true
-        },
-        {
-            image: userAvatar,
-            show: true
-        },
-        {
-            image: userAvatar,
-            show: true
-        },
-        {
-            image: userAvatar,
-            show: true
-        },
-        {
-            image: userAvatar,
-            show: true
-        },
-        {
-            image: userAvatar,
-            show: true
-        },
-        {
-            image: userAvatar,
-            show: true
-        },
-        {
-            image: userAvatar,
-            show: true
-        },
-        {
-            image: userAvatar,
-            show: true
-        }
-    ]);
 
-    const generateRandomCoordinates = (counter) => {
-        let coordArray = [];
+    const generateRandomCoordinates = () => {
+        let leftInt = Math.floor(Math.random() * ((window.innerWidth - 20) - 20) + 20);
+        let topInt = Math.floor(Math.random() * ((window.innerHeight - 105) - 20) + 20);
 
-        for (let i = 0; i < counter; i++) {
-            let leftInt = Math.floor(Math.random() * ((window.innerWidth - 20) - 20) + 20);
-            let topInt = Math.floor(Math.random() * ((window.innerHeight - 105) - 20) + 20);
-    
-            coordArray.push({top: topInt, left: leftInt});
-        }
-
-        return coordArray;
+        return {y: topInt, x: leftInt};
     };
 
-    const [coords, setCoords] = useState(generateRandomCoordinates(otherUsers.length));
+    useEffect(() => {
+        if(!isPositionSet) {
+            let newRadarUsers = radarUsers.filter(user => user.show).slice(0, 5).map(user => {
+                let newCoords = generateRandomCoordinates();
+                user.x = newCoords.x;
+                user.y = newCoords.y;
+            });
+
+            setPositionSet(true);
+            setRadarUsers(newRadarUsers);
+        }
+    }, [radarUsers]);
 
     const handleClick = (i, e) => {
         e.preventDefault();
@@ -118,13 +86,11 @@ function Radar({user, multiplicator, changeExperience}) {
         e.target.style.left = userCoords.left+"px";
 
         setTimeout(() => {
-            otherUsers[i].show = false;
+            rangeUsers[i].show = false;
 
-            let newCoords = coords;
-            newCoords[i].top = userCoords.top;
-            newCoords[i].left = userCoords.left;
+            rangeUsers[i].y = userCoords.top;
+            rangeUsers[i].x = userCoords.left;
 
-            setCoords(newCoords);
             setExp(exp + 5);
             changeExperience(exp + 5);
         }, 300);
@@ -134,14 +100,31 @@ function Radar({user, multiplicator, changeExperience}) {
         setExp(user.experience);
     }, [user]);
 
+    const getDistance = (latA, longA, latB, longB) => {
+        let R = 6371000; // km
+        let dLat = (latB-latA) * Math.PI / 180;
+        let dLon = (longB-longA) * Math.PI / 180;
+        let lat1 = (latA) * Math.PI / 180;
+        let lat2 = (latB) * Math.PI / 180;
+
+        let a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        let d = R * c;
+
+        return Math.floor(d);
+    }
+
+    console.log(rangeUsers);
+    
+
     return (
         <StyledRadarContainer>
             <StyledLevel>
                 <Level experience={exp} multiplicator={multiplicator} />
             </StyledLevel>
             <StyledRadarContent>
-                {otherUsers.map((item, i) => item.show 
-                    ? <StyledOtherUser onClick={e => handleClick(i, e)} key={i} src={item.image} top={coords[i].top} left={coords[i].left} />
+                {rangeUsers.map((range, i) => range.show 
+                    ? <StyledOtherUser onClick={e => handleClick(i, e)} key={i} src={range.image} top={range.y} left={range.x} title={`Distance: ${getDistance(user.lat, user.long, range.lat, range.long)}m`} />
                     : ''
                 )}
                 <StyledUser className="own-user" src={user.image} alt="User" />

@@ -1,148 +1,158 @@
 import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
-import Rellax from 'rellax'
+import Rellax from 'react-rellax'
 import {Link} from 'react-router-dom'
 import backButton from "../assets/back.svg";
 
+import Overlay from '../Components/Overlay'
 import Container from '../Components/Container'
 
-function Store({data, recommendations, onClick}) {
-    const {id, title, logo, interior, vouchers} = data;
 
-    const StyledStore = styled.section`
-        position: relative;
+const StyledStore = styled.section`
+    position: relative;
 
-        .back-btn {
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), transparent);
-            width: 50px;
-            height: 50px;
-            padding: 10px;
-            z-index: 2;
+    .back-btn {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), transparent);
+        width: 50px;
+        height: 50px;
+        padding: 10px;
+        z-index: 2;
 
-            img {
-                position: relative;
-                width: 100%;
-            }
-        }
-
-        .voucher-ctn {
-            background: ${({theme}) => theme.colors.blue};
-            color: ${({theme}) => theme.colors.white};
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 10px;
-            max-width: 400px;
+        img {
+            position: relative;
             width: 100%;
-            margin: 0 auto 20px auto;
-
-            b {
-                margin-right: 20px;
-            }
-
-            div {
-                margin-left: auto;
-                background: ${({theme}) => theme.colors.royal};
-                border-radius: 10px;
-                padding: 5px 17px;
-                text-transform: uppercase;
-                font-size: 1.1rem;
-                letter-spacing: 3px;
-            }
         }
-    `;
-    
-    const StyledInterior = styled.img`
+    }
+
+    .voucher-ctn {
+        background: ${({theme}) => theme.colors.blue};
+        color: ${({theme}) => theme.colors.white};
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px;
+        max-width: 400px;
+        width: 100%;
+        margin: 0 auto 20px auto;
+
+        b {
+            margin-right: 20px;
+        }
+
+        div {
+            margin-left: auto;
+            background: ${({theme}) => theme.colors.royal};
+            border-radius: 10px;
+            padding: 5px 17px;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+        }
+    }
+
+    .interior {
         position: fixed;
         top: 0;
         left: 0;
         z-index: -1;
         width: 100%;
         height: 60vh;
-        object-fit: cover;
-        object-position: 50% 50%;
-    `;
+    }
+`;
 
-    const StyledContent = styled.article`
-        position: relative;
-        padding: 90px 20px;
+const StyledInterior = styled.img`
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+`;
+
+const StyledContent = styled.article`
+    position: relative;
+    padding: 90px 20px;
+    background: white;
+    margin-top: 45vh;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -10px 10px ${({theme}) => theme.colors.shades.dark};
+
+    .logo-ctn {
+        position: absolute;
+        top: 0;
+        left: 40px;
+        width: 140px;
+        height: 140px;
+        padding: 20px;
+        border-radius: 100px;
         background: white;
-        margin-top: 45vh;
-        border-radius: 20px 20px 0 0;
-        box-shadow: 0 -10px 10px ${({theme}) => theme.colors.shades.dark};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateY(-50%);
 
-        .logo-ctn {
-            position: absolute;
-            top: 0;
-            left: 40px;
-            width: 140px;
-            height: 140px;
-            padding: 20px;
-            border-radius: 100px;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: translateY(-50%);
-
-            img {
-                position: relative;
-                width: 100%;
-            }
+        img {
+            position: relative;
+            width: 100%;
         }
-    `;
+    }
+`;
 
-    const StyledTitle = styled.h2`
-        margin-bottom: 60px;
-    `;
+const StyledTitle = styled.h2`
+    margin-bottom: 60px;
+`;
 
-    const StyledVoucherTitle = styled.h6`
-        text-align: center;
-        color: ${({theme}) => theme.colors.royal};
-    `;
+const StyledVoucherTitle = styled.h6`
+    text-align: center;
+    color: ${({theme}) => theme.colors.royal};
+`;
 
-    const StyledRecommButton = styled.button`
-        color: ${({theme}) => theme.colors.white};
-        background: ${({theme}) => theme.colors.black};
-        border: none;
-        max-width: 320px;
-        width: 100%;
-        border-radius: 5px;
-        text-transform: uppercase;
-        letter-spacing: 5px;
-        padding: 20px 40px;
-        margin: 50px auto 0 auto;
-        display: block;
-        box-shadow: 6px 6px 10px ${({theme}) => theme.colors.shades.dark};
-        font-size: 1.2rem;
+const StyledRecommButton = styled.button`
+    color: ${({theme}) => theme.colors.white};
+    background: ${({theme}) => theme.colors.black};
+    border: none;
+    max-width: 320px;
+    width: 100%;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    padding: 20px 40px;
+    margin: 50px auto 0 auto;
+    display: block;
+    box-shadow: 6px 6px 10px ${({theme}) => theme.colors.shades.dark};
+    font-size: 1.2rem;
 
-        &.clickable {
-            background: ${({theme}) => theme.colors.royal};
-        }
-    `;
+    &.clickable {
+        background: ${({theme}) => theme.colors.royal};
+    }
+`;
 
-    const StyledVoucherButton = styled.button`
-        color: ${({theme}) => theme.colors.white};
-        background: ${({theme}) => theme.colors.black};
-        border: none;
-        max-width: 100px;
-        width: 100%;
-        border-radius: 5px;
-        text-transform: uppercase;
-        letter-spacing: 5px;
-        padding: 15px;
-        margin-left: auto;
-        display: block;
-        box-shadow: 6px 6px 10px ${({theme}) => theme.colors.shades.dark};
-        font-size: 1rem;
+const StyledVoucherButton = styled.button`
+    color: ${({theme}) => theme.colors.white};
+    background: ${({theme}) => theme.colors.black};
+    border: none;
+    max-width: 100px;
+    width: 100%;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    padding: 15px;
+    margin-left: auto;
+    display: block;
+    box-shadow: 6px 6px 10px ${({theme}) => theme.colors.shades.dark};
+    font-size: 1rem;
 
-        &.clickable {
-            background: ${({theme}) => theme.colors.royal};
-        }
-    `;
+    &.clickable {
+        background: ${({theme}) => theme.colors.royal};
+    }
+`;
+
+function Store({data, recommendations, onClick}) {
+    const {id, title, logo, interior, vouchers} = data;
+
+    const [isOpenOverlay, setOpenOverlay] = useState(false);
+    const [overlayCode, setOverlayCode] = useState(null);
 
     const [btnRecommend, setBtnRecommend] = useState({
         btn: "Recommend",
@@ -168,27 +178,17 @@ function Store({data, recommendations, onClick}) {
         return `${calcTime.hours}:${calcTime.minutes}:${calcTime.seconds}`;
     };
 
-    useEffect(() => {        
-        const rellax = new Rellax('.rellax', {
-            speed: 4,
-            center: false,
-            wrapper: null,
-            round: true,
-            vertical: true,
-            horizontal: false
-        });
-
+    useEffect(() => {
         if(!isBtnChecked && recommendations.length > 0) {
             // Duration in Seconds (for debug) Normal: 172800
             const duration = 172800;
 
             const changeBtnRecommend = () => {
-                const recommendFound = recommendations.filter(obj => obj.storeId == id && !obj.voucherId && Math.floor(new Date() / 1000 - obj.date.seconds) <= duration)[0];                
+                let newBtnRecommend = {...btnRecommend};
+                const recommendFound = recommendations.filter(obj => obj.storeId === id && !obj.voucherId && Math.floor(new Date() / 1000 - obj.date.seconds) <= 172800)[0];                
                 
                 if(recommendFound != null) {
                     const {seconds: recommendSeconds} = recommendFound.date;
-                    
-                    let newBtnRecommend = {...btnRecommend};
                     const countdownTime = new Date() / 1000 - recommendSeconds;
                     
                     if(countdownTime < duration) {
@@ -209,8 +209,8 @@ function Store({data, recommendations, onClick}) {
                 let newBtnVouchers = btnVouchers;
 
                 newBtnVouchers.map(voucher => {
-                    const voucherFound = recommendations.filter(obj => obj.voucherId == voucher.id && Math.floor(new Date() / 1000 - obj.date.seconds) <= duration)[0];
-
+                    const voucherFound = recommendations.filter(obj => obj.voucherId === voucher.id && Math.floor(new Date() / 1000 - obj.date.seconds) <= duration)[0];
+                                        
                     if(voucherFound != null) {
                         const {seconds: voucherSeconds} = voucherFound.date;
 
@@ -231,24 +231,22 @@ function Store({data, recommendations, onClick}) {
                 setBtnVouchers(newBtnVouchers);
             };
 
-            changeBtnRecommend();
             changeBtnVouchers();
-
-            console.log("Hallo");
-            
+            changeBtnRecommend();
 
             setInterval(() => {
-                // Recommend Button
-                changeBtnRecommend();
                 changeBtnVouchers();
+                changeBtnRecommend();
             }, 1000);
 
             setBtnChecked(true);
         }
     }, [recommendations]);
 
-    const handleClick = (exp, storeId, voucherId) => {
+    const handleClick = (exp, storeId, voucherId, code) => {
         setBtnChecked(false);
+        if(voucherId != null) setOpenOverlay(true);
+        if(code != null) setOverlayCode(code);
         onClick(exp, storeId, voucherId);
     };
 
@@ -258,8 +256,10 @@ function Store({data, recommendations, onClick}) {
                 <img src={backButton} alt="Back" />
             </Link>
 
-            <StyledInterior className="rellax" src={interior} alt="Interior" />
-
+            <Rellax speed={4} className="interior">
+                <StyledInterior src={interior} alt="Interior" />
+            </Rellax>
+            
             <StyledContent>
                 <Container className="logo-ctn">
                     <img src={logo} alt="Logo" />
@@ -269,16 +269,18 @@ function Store({data, recommendations, onClick}) {
 
                 <StyledVoucherTitle>Vouchers</StyledVoucherTitle>
 
-                {btnVouchers.map(({id:voucherId, lv, title, btn, clickable}, i) => 
+                {btnVouchers.map(({id:voucherId, lv, title, btn, clickable, code}, i) => 
                     <Container className="voucher-ctn" key={i} size={100}>
                         <b>Lv {lv}</b>
                         <span>{title}</span>
-                        <StyledVoucherButton className={clickable ? "clickable" : ""} onClick={() => clickable ? handleClick(10, id, voucherId) : ''}>{btn}</StyledVoucherButton>
+                        <StyledVoucherButton className={clickable ? "clickable" : ""} onClick={() => clickable ? handleClick(10, id, voucherId, code) : ''}>{btn}</StyledVoucherButton>
                     </Container>
                 )}
 
                 <StyledRecommButton className={btnRecommend.clickable ? "clickable" : ""} onClick={() => btnRecommend.clickable ? handleClick(20, id) : ''}>{btnRecommend.btn}</StyledRecommButton>
             </StyledContent>
+
+            {isOpenOverlay ? <Overlay code={overlayCode} emitOpen={(bool) => setOpenOverlay(bool)} /> : ''}
         </StyledStore>
     )
 }

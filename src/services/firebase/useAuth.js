@@ -9,15 +9,15 @@ function useAuth(fbAuth) {
     const facebookProvider = new fbAuth.FacebookAuthProvider();
 
     fbAuth().onAuthStateChanged(fbUser => {
-        // setLoading(false);
-
         if(fbUser) {                   
             setIsAuthenticated(true);
             setUser(fbUser);
+            setLoading(false);
             return;
         }
 
         setIsAuthenticated(false);
+        setLoading(false);
     });
 
     const signInEmailUser = (email, password) => fbAuth().signInWithEmailAndPassword(email, password);

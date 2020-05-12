@@ -64,16 +64,16 @@ function ProtectedRoute({isLoggedIn, children, userData, stores, changeExperienc
                     allStoreRecommendations.push(entry.data());
                 });
 
-                if(promise.size != 0)
+                if(promise.size !== 0)
                     setStoreRecommendations([...allStoreRecommendations]);
             });
     };
 
-    const checkStore = (filteredStore) => {
-        if(storeRecommendations.length == 0)
+    const checkStore = filteredStore => {        
+        if(storeRecommendations.length === 0)
             updateUserRecommendations(filteredStore.id, userData.userId);
 
-        return filteredStore ? <Store data={filteredStore} recommendations={storeRecommendations.filter(storeRec => storeRec.storeId == filteredStore.id)} onClick={(exp, storeId, voucherId) => handleStoreRecommendations(exp, storeId, voucherId, userData.userId)} /> : <Redirect to="/dash" />;
+        return filteredStore ? <Store data={filteredStore} recommendations={storeRecommendations.filter(storeRec => storeRec.storeId === filteredStore.id)} onClick={(exp, storeId, voucherId) => handleStoreRecommendations(exp, storeId, voucherId, userData.userId)} /> : <Redirect to="/dash" />;
     };
 
     initAttemptedRoute  = useLocation().pathname;
@@ -105,25 +105,25 @@ function RedirectRoute({isLoggedIn, children, ...rest}) {
 }
 
 function App() {
-    if(firebase.apps.length === 0)
-        firebase.initializeApp(firebaseConfig);
+    if(firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
 
     const {isAuthenticated, user, signInEmailUser, signInWithProvider, signOut, createEmailUser, isLoading, setLoading} = useAuth(firebase.auth);
-    const {createNewUser, getCurrentUser, updateCurrentUser, getAllStores} = useDatabase(firebase.firestore);
+    const {getAllRangeUsers, createNewUser, getCurrentUser, updateCurrentUser, getAllStores} = useDatabase(firebase.firestore);
 
-    const [userData, setUserData] = useState({userId: "", name: "", image: "", experience: 0, recommendations: 0, peopleMet: 0, coords: {lat:0, long:0}});
+    const [userData, setUserData] = useState({userId: "", name: "", image: "", experience: 0, recommendations: 0, peopleMet: 0, lat:0, long:0});
     const [stores, setStores] = useState([]);
     const [isMounted, setMounted] = useState(false);
+    const [rangeUsers, setRangeUsers] = useState([]);    
 
-    useEffect(() => {
+    useEffect(() => {        
         if(!isMounted && isAuthenticated) {
             navigator.geolocation.watchPosition(
                 pos => {
                     // console.log(userData);
-                    if(pos.coords.latitude != userData.coords.lat || pos.coords.longitude != userData.coords.long) {
+                    if(parseFloat(pos.coords.latitude) !== userData.lat || parseFloat(pos.coords.longitude) !== userData.long) {
                         let coordUserData = userData;
-                        coordUserData.coords.lat = pos.coords.latitude;
-                        coordUserData.coords.long = pos.coords.longitude;
+                        coordUserData.lat = parseFloat(pos.coords.latitude);
+                        coordUserData.long = parseFloat(pos.coords.longitude);
 
                         setUserData(coordUserData);
                         updateCurrentUser(userData, userData.userId);
@@ -133,26 +133,42 @@ function App() {
                         // long: 0.08
                     }
                 },
-                err => console.log(err), 
-                {timeout: 5000}
+                err => console.log(err)
             );
             
-            getAllStores().then(promise => {
-                let storeArr = [];
-        
-                promise.forEach(store => {
-                    storeArr.push(store.data());
+            getAllStores()
+                .then(promise => {
+                    let storeArr = [];
+            
+                    promise.forEach(store => {
+                        storeArr.push(store.data());
+                    });
+            
+                    setStores(storeArr);
+
+                    getAllRangeUsers(userData.lat)
+                        .then(promise => {
+                            let userArr = [];
+
+                            promise.forEach(user => // Ca 10km Radius
+                                user.data().userId !== userData.userId 
+                                && user.data().long >= userData.long - .05
+                                && user.data().long <= userData.long + .05
+                                    ? userArr.push({...user.data(), show: true, x: -40, y: -40}) 
+                                    : ''
+                            );
+
+                            setRangeUsers(userArr);
+                        })
+                        .then(() => {
+                            setLoading(false);
+                            setMounted(true);
+                        });
                 });
-        
-                setStores(storeArr);
-            }).then(() => {
-                setLoading(false);
-                setMounted(true);
-            });
         }
     }, [userData]);
 
-    const changeExperience = (newEXP) => {
+    const changeExperience = newEXP => {
         let updatedUserData = userData;
         updatedUserData.experience = newEXP;
         setUserData(updatedUserData);
@@ -176,21 +192,19 @@ function App() {
                 experience: 0,
                 recommendations: 0,
                 peopleMet: 0,
-                coords: {lat: 0, long: 0}
+                lat: 0, 
+                long: 0
             });
     
             createEmailUser(email, password, username);
         };
-    }
+    };    
 
-    useEffect(() => {
-        // console.log(user);
-        if(user.uid != null) {
-            getCurrentUser(user.uid).then(searchedUser => {       
-                // No User found -> Create New
-                // console.log(searchedUser);
-                
-                if(searchedUser == null) {
+    useEffect(() => {        
+        if(user.uid != null) {            
+            getCurrentUser(user.uid).then(searchedUser => {                       
+                // No User found -> Create New                
+                if(searchedUser == null) {                    
                     let newUserData = {
                         userId: user.uid,
                         name: user.displayName ? user.displayName : userData.name,
@@ -198,7 +212,8 @@ function App() {
                         experience: 0,
                         recommendations: 0,
                         peopleMet: 0,
-                        coords: {lat: 0, long: 0}
+                        lat: 0, 
+                        long: 0
                     };
 
                     setUserData(newUserData);
@@ -214,7 +229,8 @@ function App() {
                         experience: searchedUser.experience,
                         recommendations: searchedUser.recommendations,
                         peopleMet: searchedUser.peopleMet,
-                        coords: {lat: searchedUser.coords.lat, long: searchedUser.coords.long}
+                        lat: parseFloat(searchedUser.lat),
+                        long: parseFloat(searchedUser.long)
                     });
             });
         }
@@ -249,7 +265,7 @@ function App() {
                     </ProtectedRoute>
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/radar">
-                        <Radar user={userData} multiplicator={1} changeExperience={changeExperience} />
+                        <Radar user={userData} rangeUsers={rangeUsers} multiplicator={1} changeExperience={changeExperience} />
                     </ProtectedRoute>
 
                     <Redirect from="/" to="/dash" />
