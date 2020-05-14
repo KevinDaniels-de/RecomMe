@@ -1,64 +1,103 @@
 import React, {useEffect, useState} from 'react'
 import styled from 'styled-components'
 
-import Level from '../Components/Level'
+const StyledRadar = styled.div`
+    position: relative;
+    margin: 0 auto;
+    max-width: 540px;
+    width: 90%;
+    height: calc(100vh - 160px);
+    overflow: hidden;
+    padding: 20px;
+    background: rgba(0,0,0,.15);
+    border-radius: 10px;
+    box-shadow: inset 5px 5px 10px ${({theme}) => theme.colors.shades.dark}, inset -5px -5px 10px ${({theme}) => theme.colors.shades.light};
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-around;
+`;
 
-function Radar({rangeUsers, user, multiplicator, changeExperience}) {
+const StyledUser = styled.div`
+    width: 75px;
+    height: 75px;
+    padding: 8px;
+    background: ${({theme}) => theme.colors.shades.dark};
+    border-radius: 100%;
+    position: absolute;
+    right: ${({right}) => right}%;
+    bottom: ${({bottom}) => bottom}%;
+    transition: right .3s, bottom .3s;
+    box-shadow: inset 3px 3px 7px ${({theme}) => theme.colors.shades.dark}, inset -3px -3px 7px ${({theme}) => theme.colors.shades.light};
 
-    const StyledRadarContainer = styled.div``;
-
-    const StyledLevel = styled.div`
-        max-width: 120px;
-        width: 100%;
+    &::after {
+        content: "";
         position: absolute;
-        top: 20px;
-        left: 20px;
+        top: -25%;
+        left: 0;
+        width: 100%;
+        height: 130%;
         z-index: 10;
-        color: ${({theme}) => theme.colors.white};
-    `;
+    }
+`;
 
-    const StyledRadarContent = styled.div`
-        position: absolute;
-        width: 100%;
-        height: calc(100% - 85px);
-        background: ${({theme}) => theme.colors.royal};
-        z-index: 0;
-    `;
+const StyledUserImage = styled.img`
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    border-radius: 100%;
+`;
 
-    const StyledUser = styled.img`
+const StyledDistance = styled.div`
+    color: ${({theme}) => theme.colors.white};
+    background: rgba(0,0,0,.8);
+    font-size: 1rem;
+    display: inline-block;
+    padding: 0px 10px;
+    border-radius: 20px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    z-index: 1;
+
+    &::after {
+        content: "";
+        border-style: solid;
+        border-width: 6px 6px 0 6px;
+        border-color: rgba(0,0,0,.8) transparent transparent transparent;
         position: absolute;
-        top: 50%;
+        bottom: 0;
         left: 50%;
-        transform: translate(-50%, -50%);
-        width: 110px;
-        height: 110px;
-        border-radius: 100%;
-        box-shadow: 3px 3px 10px ${({theme}) => theme.colors.shades.black};
-        z-index: 9;
-    `;
+        transform: translate(-50%, 99%);
+    }
+`;
 
-    const StyledOtherUser = styled.img`
-        position: absolute;
-        top: ${props => props.top}px;
-        left: ${props => props.left}px;
-        transition: all .3s;
-        transform: translate(-50%, -50%);
-        width: 50px;
-        height: 50px;
-        border-radius: 100%;
-        box-shadow: 3px 3px 10px ${({theme}) => theme.colors.shades.black};
-        z-index: 7;
-    `;
+const StyledEmpty = styled.h4`
+    color: ${({theme}) => theme.colors.white};
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    transform: translateY(-50%);
+`;
 
+const Radar = ({rangeUsers, user, multiplicator, changeExperience}) => {
     const [isPositionSet, setPositionSet] = useState(false);
     const [radarUsers, setRadarUsers] = useState(rangeUsers);
     const [exp, setExp] = useState(user.experience);
 
     const generateRandomCoordinates = () => {
-        let leftInt = Math.floor(Math.random() * ((window.innerWidth - 20) - 20) + 20);
-        let topInt = Math.floor(Math.random() * ((window.innerHeight - 105) - 20) + 20);
+        // let rightInt = Math.floor(Math.random() * ((window.innerWidth - 20) - 20) + 20);
+        // let bottomInt = Math.floor(Math.random() * ((window.innerHeight - 105) - 20) + 20);
+        // let rightInt = Math.floor(Math.random() * (max - min + 1) + min);
+        let rightInt = Math.floor(Math.random() * (85 - 5 + 1) + 5);
+        let bottomInt = Math.floor(Math.random() * (85 - 5 + 1) + 5);
 
-        return {y: topInt, x: leftInt};
+        return {y: bottomInt, x: rightInt};
     };
 
     useEffect(() => {
@@ -77,19 +116,14 @@ function Radar({rangeUsers, user, multiplicator, changeExperience}) {
     const handleClick = (i, e) => {
         e.preventDefault();
 
-        let userCoords = {
-            top: document.querySelector('.own-user').offsetTop,
-            left: document.querySelector('.own-user').offsetLeft
-        };
-
-        e.target.style.top = userCoords.top+"px";
-        e.target.style.left = userCoords.left+"px";
+        e.target.style.right = "22%";
+        e.target.style.bottom = "-30%"
 
         setTimeout(() => {
             rangeUsers[i].show = false;
 
-            rangeUsers[i].y = userCoords.top;
-            rangeUsers[i].x = userCoords.left;
+            rangeUsers[i].y = -30;
+            rangeUsers[i].x = -30;
 
             setExp(exp + 5);
             changeExperience(exp + 5);
@@ -118,18 +152,18 @@ function Radar({rangeUsers, user, multiplicator, changeExperience}) {
     
 
     return (
-        <StyledRadarContainer>
-            <StyledLevel>
-                <Level experience={exp} multiplicator={multiplicator} />
-            </StyledLevel>
-            <StyledRadarContent>
-                {rangeUsers.map((range, i) => range.show 
-                    ? <StyledOtherUser onClick={e => handleClick(i, e)} key={i} src={range.image} top={range.y} left={range.x} title={`Distance: ${getDistance(user.lat, user.long, range.lat, range.long)}m`} />
+        <StyledRadar>
+            {rangeUsers.filter(user => user.show).length >= 1
+                ? rangeUsers.map((range, i) => range.show 
+                    ? <StyledUser onClick={e => handleClick(i, e)} key={i} bottom={range.y} right={range.x}>
+                        <StyledDistance>{`${getDistance(user.lat, user.long, range.lat, range.long)}m`}</StyledDistance>
+                        <StyledUserImage src={range.image} alt="Profile Image" />
+                    </StyledUser>
                     : ''
-                )}
-                <StyledUser className="own-user" src={user.image} alt="User" />
-            </StyledRadarContent>
-        </StyledRadarContainer>
+                )
+                : <StyledEmpty>No users in range found</StyledEmpty>
+            }
+        </StyledRadar>
     )
 }
 

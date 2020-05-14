@@ -2,15 +2,15 @@ import React from 'react'
 import styled from 'styled-components'
 import spinner from '../assets/spinner.svg'
 
-
-function Loader() {
+const Loader = () => {
     const StyledLoaderContainer = styled.section`
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 100vh;
         z-index: 5;
+        background: #7e04bc;
     `;
     
     const StyledLoader = styled.img`

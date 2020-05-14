@@ -5,7 +5,7 @@ function useDatabase(fStore) {
 
     const createNewUser  = newValue => dbUser.doc(newValue.userId).set(newValue);
 
-    const getAllStores = async () => await dbStore.get();
+    const getAllStores = async () => dbStore.get();
 
     const getAllRangeUsers = (latitude) => dbUser.where("lat", ">=", latitude - .05).where("lat", "<=", latitude + .05).get();
 

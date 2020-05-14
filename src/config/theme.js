@@ -20,13 +20,14 @@ const theme = {
 
     colors: {
       white: "#f1f1f1",
-      black: "#1d1d1d",
+      black: "#090909",
+      purple: "#7e04bc",
       royal: "#000133",
       blue: "#1e488f",
 
       shades: {
-        dark: "rgba(0, 0, 0, .1)",
-        light: "rgba(255, 255, 255, .1)"
+        dark: "rgba(0, 0, 0, .3)",
+        light: "rgba(255, 255, 255, .3)"
       }
     }
   };

@@ -5,119 +5,49 @@ import {Link, useLocation} from 'react-router-dom'
 import logo from "../assets/logo.png";
 
 const StyledMenu = styled.nav`
+    width: 100%;
+    height: 90px;
+    background-color: ${({theme}) => theme.colors.purple};
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background: ${({theme}) => theme.colors.white};
-    z-index: 100;
-
-    img {
-        display: none;
-    }
+    justify-content: center;
 
     .nav-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 65px;
-        height: 65px;
-        text-decoration: none;
-        border-radius: 100px;
-        margin: 10px;
-        color: ${({theme}) => theme.colors.white};
+        margin: 0 5px;
+        line-height: 0;
+        cursor: pointer;
 
-        &.active {
-            background: ${({theme}) => theme.colors.white};
-            box-shadow: inset 5px 5px 10px ${({theme}) => theme.colors.shades.dark}, 
-                        inset -5px -5px 10px ${({theme}) => theme.colors.shades.light};
-
-            svg {
-                fill: ${({theme}) => theme.colors.blue};
-            }
-        }
-        
         svg {
-            width: 36px;
-            margin: 0 auto;
-            fill: ${({theme}) => theme.colors.shades.black};
+            fill: ${({theme}) => theme.colors.white};
+            width: 50px;
+            height: 50px;
+            padding: 10px;
         }
-    
+
         span {
             display: none;
         }
-    }
 
-    ${({theme}) => theme.mediaQueries.tablet} {
-        justify-content: center;
-    }
-
-    ${({theme}) => theme.mediaQueries.desktop} {
-        width: 250px;
-        height: 100%;
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 10px;
-        background: ${({theme}) => theme.colors.white};
-
-        img {
-            display: block;
-            width: 90%;
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translate(-50%, 0%);
-        }
-
-        .nav-item {
-            width: 100%;
-            height: auto;
-            padding: 10px 20px;
-            flex-direction: row;
-            justify-content: flex-start;
-            margin: 10px 0;
-            transition: all .2s;
-
-            &.active, &:hover {
-                background-color: ${({theme}) => theme.colors.white};
-                box-shadow: inset 7px 7px 14px ${({theme}) => theme.colors.shades.dark}, 
-                            inset -7px -7px 14px ${({theme}) => theme.colors.white};
-
-                svg {
-                    fill: ${({theme}) => theme.colors.blue};
-                }
-
-                span {
-                    color: ${({theme}) => theme.colors.blue};
-                }
-            }
-
+        &.active {
             svg {
-                width: 60px;
-                margin: 0 10px 0 0;
-                fill: ${({theme}) => theme.colors.black};
-            }
-
-            span {
-                width: auto;
-                font-size: 1.6rem;
-                color: ${({theme}) => theme.colors.black};
-                font-weight: 700;
+                fill: ${({theme}) => theme.colors.purple};
+                background-color: ${({theme}) => theme.colors.white};
+                border-radius: 100%;
+                box-shadow: 5px 5px 10px ${({theme}) => theme.colors.shades.dark}, -5px -5px 10px ${({theme}) => theme.colors.shades.light};
             }
         }
     }
 `;
 
-function MenuItem(props) {
-    const {emitSignOut, path, svg, title} = props;
-    const location = useLocation();
-    const isActive = location.pathname.split('/')[1] === title.toLowerCase() ? true : false;
+const StyledLogo = styled.img`
+    display: none;
+`;
 
-    const handleClick = () => emitSignOut(path);
+const MenuItem = ({signOut, path, svg, title}) => {
+    const location = useLocation();
+    const isActive = title.toLowerCase().includes(location.pathname.split('/')[1]) ? true : false;
+
+    const handleClick = () => path === "/logout" ? signOut(path) : '';
 
     return (
         <Link to={path} className={`nav-item${isActive ? " active" : ""}`} onClick={handleClick}>
@@ -130,18 +60,14 @@ function MenuItem(props) {
     );
 }
 
-function Menu(props) {
-    const {emitSignOut, isLoggedIn, menuItems} = props;
-
-    const handleEmit = (path) => emitSignOut(path);
-
+const Menu = ({signOut, isLoggedIn, menuItems}) => {
     return (
-        isLoggedIn ? (
-            <StyledMenu>
-                <img src={logo} alt="Navigation Icon" />
-                {menuItems.map(item => <MenuItem key={item.id} path={item.path} svg={item.svg} title={item.title} emitSignOut={handleEmit} />)}
-            </StyledMenu>
-        ) : ''
+        isLoggedIn 
+        ? (<StyledMenu>
+                <StyledLogo src={logo} alt="Navigation Icon" />
+                {menuItems.map((item, i) => <MenuItem key={i} path={item.path} svg={item.svg} title={item.title} signOut={signOut} />)}
+            </StyledMenu>) 
+        : ''
     );
 }
 

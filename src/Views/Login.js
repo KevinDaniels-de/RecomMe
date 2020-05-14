@@ -3,95 +3,135 @@ import styled from 'styled-components'
 import iconFacebook from "../assets/icon-facebook.svg"
 import iconGoogle from "../assets/icon-google.svg"
 import {Link} from 'react-router-dom'
-import {useForm} from 'react-hook-form';
+import {useForm} from 'react-hook-form'
+import * as yup from 'yup'
 
-import * as yup from 'yup';
+const StyledLogin = styled.section`
+    position: relative;
+    margin: 0 auto;
+    width: 90%;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+`;
 
-function Login(props) {
-    const StyledLoginContainer = styled.section``;
+const StyledForm = styled.form`
+    background: ${({theme}) => theme.colors.white};
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: inset 5px 5px 10px ${({theme}) => theme.colors.shades.dark}, inset -5px -5px 10px ${({theme}) => theme.colors.shades.light}, 
+                3px 3px 7px ${({theme}) => theme.colors.shades.dark}, -3px -3px 7px ${({theme}) => theme.colors.shades.light};
+    position: relative;
+    max-width: 360px;
+    width: 90%;
+    margin: 0 auto;
 
-    const StyledHeadline = styled.h1`
-        color: ${({theme}) => theme.colors.white};
-        background: linear-gradient(145deg, ${({theme}) => theme.colors.blue}, ${({theme}) => theme.colors.royal});
-        padding: 20px 20px 40px 20px;
-        margin: 0;
-        line-height: 140%;
-    `;
+    .register {
+        font-weight: 700;
+        display: block;
+        text-align: center;
+        margin: 30px auto 0 auto;
+        text-decoration: none;
+        border: 1px solid ${({theme}) => theme.colors.purple};
+        border-radius: 30px;
+        padding: 5px 20px;
+        color: ${({theme}) => theme.colors.purple};
+        text-transform: uppercase;
+        font-size: 1rem;
+        letter-spacing: 3px;
+    }
+`;
 
-    const StyledForm = styled.form`
-        background: ${({theme}) => theme.colors.white};
-        border-radius: 20px 20px 0 0;
-        padding: 20px;
-        margin: -20px 0 -85px 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+const StyledLabel = styled.label`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-bottom: 20px;
 
-        input[type="text"] {
-            font-family: inherit;
-            font-size: 2rem;
-            padding: 10px;
-            border: none;
-            background: ${({theme}) => theme.colors.white};
-            box-shadow: 3px 3px 10px ${({theme}) => theme.colors.shades.dark};
-            margin: 0 auto 20px auto;
-            max-width: 260px;
-            width: 100%;
-            display: block;
-        }
+    span {
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 3px;
+        margin-left: 20px;
+        font-family: ${({theme}) => theme.typography.font.headline};
+    }
 
-        input[type="submit"] {
-            border: none;
-            background: ${({theme}) => theme.colors.royal};
-            color: white;
-            font-family: inherit;
-            text-transform: uppercase;
-            letter-spacing: 10px;
-            font-size: 1.3rem;
-            padding: 20px 40px;
-            border-radius: 5px;
-            margin-bottom: 30px;
-        }
+    input {
+        width: 100%;
+        border: none;
+        outline: 0;
+        padding: 17px;
+        border-radius: 60px;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 1.6rem;
+        box-shadow: 3px 3px 7px ${({theme}) => theme.colors.shades.dark}, -3px -3px 7px ${({theme}) => theme.colors.shades.light};
+    }
+`;
 
-        a {
-            color: black;
-            font-weight: 700;
-            margin-top: 20px;
-        }
-    `;
+const StyledSubmit = styled.input`
+    border: none;
+    background: ${({theme}) => theme.colors.purple};
+    width: 100%;
+    padding: 20px;
+    font-weight: 700;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    border-radius: 30px;
+    margin: 20px 0 30px 0;
+    color: ${({theme}) => theme.colors.white};
+    box-shadow: 3px 3px 7px ${({theme}) => theme.colors.shades.dark}, -3px -3px 7px ${({theme}) => theme.colors.shades.light};
+`;
 
-    const StyledSocial = styled.div`
-        img {
-            background: ${({theme}) => theme.colors.blue};
-            border-radius: 100%;
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            object-position: 50% 50%;
-            padding: 20px;
-            display: inline-block;
-            margin: 20px 10px;
-        }
-    `;
+const StyledError = styled.b`
+    color: red;
+    font-weight: bold;
+    font-style: oblique;
+`;
 
-    const StyledErrorLabel = styled.label`
-        color:red;
-        font-weight: bold;
-    `;
+const StyledOneClick = styled.h6`
+    text-align: center;
+    text-shadow: 3px 3px 7px ${({theme}) => theme.colors.shades.dark}, -3px -3px 7px ${({theme}) => theme.colors.shades.light};
+    border-top: 1px solid ${({theme}) => theme.colors.shades.dark};
+    padding-top: 30px;
+`;
 
-    const {signInEmailUser, signInWithProvider} = props;
+const StyledSocial = styled.div`
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: center;
+`;
 
+const StyledSocialIcon = styled.img`
+    width: 60px;
+    padding: 15px;
+    background: ${({theme}) => theme.colors.purple};
+    border-radius: 100%;
+    margin: 0 10px;
+    box-shadow: 3px 3px 7px ${({theme}) => theme.colors.shades.dark}, -3px -3px 7px ${({theme}) => theme.colors.shades.light};
+    cursor: pointer;
+
+    &.icon-fb {
+        background: #3b5998;
+    }
+
+    &.icon-google {
+        background: #DB4437;
+    }
+`;
+
+const Login = ({signInEmailUser, signInWithProvider}) => {
     const mailingListSchema = yup.object().shape({
-        email: yup.string().email('e-mail is not valid').required('you must enter a e-mail'),
-        password: yup.string().required('password is required').min(2, 'name must be a a longer than two characters')
+        email: yup.string().email('The mail is not valid').required('You must enter a mail'),
+        password: yup.string().required('A password is required').min(2, 'The password must be a a longer than two characters')
     });
 
     const {register, handleSubmit,  errors} = useForm({validationSchema:mailingListSchema});
 
-    const onSubmit = async data => {
-        const {email, password} = data;
-
+    const onSubmit = async ({email, password}) => {
         try {
             const user = await signInEmailUser(email, password);
             console.log(user);
@@ -103,23 +143,31 @@ function Login(props) {
     const handleSocialClick = provider => signInWithProvider(provider);
 
     return (
-        <StyledLoginContainer>
-            <StyledHeadline>Login</StyledHeadline>
+        <StyledLogin>
             <StyledForm onSubmit={handleSubmit(onSubmit)}>
-                <input type="text" name="email" placeholder="E-Mail" ref={register} />
-                <StyledErrorLabel>{errors.email && errors.email.message}</StyledErrorLabel>
+                <StyledLabel>
+                    <span>Mail</span>
+                    <input type="text" name="email" placeholder="Enter mail..." ref={register} />
+                    <StyledError>{errors.email && errors.email.message}</StyledError>
+                </StyledLabel>
 
-                <input type="text" name="password" placeholder="Password" ref={register} />
-                <StyledErrorLabel>{errors.password && errors.password.message}</StyledErrorLabel>
+                <StyledLabel>
+                    <span>Password</span>
+                    <input type="password" name="password" placeholder="Enter password..." ref={register} />
+                    <StyledError>{errors.password && errors.password.message}</StyledError>
+                </StyledLabel>
 
-                <input type="submit" value="Send" />
+                <StyledSubmit type="submit" value="Send" />
+
+                <StyledOneClick>Use One-Click</StyledOneClick>
                 <StyledSocial>
-                    <img src={iconFacebook} network="facebook" alt="Facebook Login" onClick={() => handleSocialClick("facebook")} />
-                    <img src={iconGoogle} network="google" alt="Google Login" onClick={() => handleSocialClick("google")} />
+                    <StyledSocialIcon src={iconFacebook} className="icon-fb" network="facebook" alt="Facebook Login" onClick={() => handleSocialClick("facebook")} />
+                    <StyledSocialIcon src={iconGoogle} className="icon-google" network="google" alt="Google Login" onClick={() => handleSocialClick("google")} />
                 </StyledSocial>
-                <Link to={'/register'}>New? Register</Link>
+
+                <Link to={'/register'} className="register">New? Register</Link>
             </StyledForm>
-        </StyledLoginContainer>
+        </StyledLogin>
     )
 }
 

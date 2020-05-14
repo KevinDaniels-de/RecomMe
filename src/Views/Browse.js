@@ -2,80 +2,65 @@ import React from 'react'
 import styled from 'styled-components'
 import {Link} from 'react-router-dom'
 
-import Container from '../Components/Container'
-
 const StyledBrowse = styled.section`
-`;
-
-const StyledLogo = styled.img`
+    position: relative;
     margin: 0 auto;
-    width: 80%;
-    height: 60px;
-    object-fit: contain;
-    object-position: 50% 50%;
-    display: block;
-    margin-bottom: 20px;
-`;
-
-const StyledBrowseTitle = styled.div`
-    background: linear-gradient(145deg, ${({theme}) => theme.colors.blue}, ${({theme}) => theme.colors.royal});
-    color: ${({theme}) => theme.colors.white};
+    width: 90%;
+    height: calc(100vh - 160px);
+    overflow-y: auto;
     padding: 20px;
-`;
-
-const StyledHeadline = styled.h6`
-    text-align: center;
-    margin: 0;
-    font-family: ${({theme}) => theme.typography.font.text};
-    font-size: 1.3rem;
-    font-weight: 700;
-`;
-
-const StyledContent = styled.div`
+    background: rgba(0,0,0,.15);
+    border-radius: 10px;
+    box-shadow: inset 5px 5px 10px ${({theme}) => theme.colors.shades.dark}, inset -5px -5px 10px ${({theme}) => theme.colors.shades.light};
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    justify-content: space-between;
-    padding: 20px;
-    background: ${({theme}) => theme.colors.white};
-    border-radius: 20px 20px 0 0;
-    position: relative;
-    margin-top: -20px;
+    justify-content: space-around;
+`;
 
-    .store-item {
+const StyledStore = styled.div`
+    background: ${({theme}) => theme.colors.white};
+    border-radius: 10px;
+    max-width: 130px;
+    width: 100%;
+    margin-bottom: 15px;
+    box-shadow: 3px 3px 5px ${({theme}) => theme.colors.shades.light}, -3px -3px 5px ${({theme}) => theme.colors.shades.dark};
+
+    a {
         display: flex;
         flex-direction: column;
-        flex-wrap: wrap;
         align-items: center;
-        justify-content: space-between;
-
-        a {
-            padding: 10px;
-            color: ${({theme}) => theme.colors.black};
-            text-decoration: none;
-        }
+        justify-content: flex-start;
+        padding: 15px;
+        text-decoration: none;
     }
 `;
 
-function Browse({stores}) {
+const StyledLogo = styled.img`
+    width: 100%;
+    height: 70px;
+    object-fit: contain;
+    object-position: 50% 50%;
+`;
 
+const StyledHeadline = styled.h6`
+    margin: 0;
+    color: ${({theme}) => theme.colors.black};
+    padding-top: 15px;
+    font-size: 1.6rem;
+`;
+
+const Browse = ({stores}) => {
     return (
         <StyledBrowse>
-            
-            <StyledBrowseTitle>
-                <h3>Browse Stores</h3>
-            </StyledBrowseTitle>
-
-            <StyledContent>
-                {stores.map(item => 
-                    <Container key={item.id} size={47} className="store-item">
+             {stores.map(item => 
+                    <StyledStore key={item.id} size={47} className="store-item">
                         <Link to={`/browse/${item.title.toLowerCase().trim().replace(/ /g, "-")}`}>
                             <StyledLogo src={item.logo} />
                             <StyledHeadline>{item.title}</StyledHeadline>
                         </Link>
-                    </Container>
+                    </StyledStore>
                 )}
-            </StyledContent>
         </StyledBrowse>
     )
 }

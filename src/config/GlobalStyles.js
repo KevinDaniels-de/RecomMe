@@ -55,11 +55,11 @@ const GlobalStyles = createGlobalStyle`
     
     *::-webkit-scrollbar {
         width: 10px;
-        background-color: ${({theme}) => theme.colors.black};
+        background-color: ${({theme}) => theme.colors.white};
     }
     
     *::-webkit-scrollbar-thumb {
-        background-color: ${({theme}) => theme.colors.blue};
+        background-color: ${({theme}) => theme.colors.black};
         border-radius: 0;
     }
 
