@@ -267,6 +267,9 @@ const Store = ({data, recommendations, onClick, experience}) => {
                 changeBtnRecommend();
             }, 1000);
 
+            console.log("HI");
+            
+
             setBtnChecked(true);
         }
     }, [recommendations]);

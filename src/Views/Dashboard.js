@@ -1,8 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import ProfileImage from '../Components/ProfileImage'
-import ProfileExperience from '../Components/ProfileExperience'
+import ProfileBar from '../Components/ProfileBar'
 
 const StyledDashboard = styled.section`
     position: relative;
@@ -29,13 +28,13 @@ const StyledContent = styled.div`
     box-shadow: 5px 5px 10px ${({theme}) => theme.colors.shades.dark}, -5px -5px 10px ${({theme}) => theme.colors.shades.light};
     text-align: center;
 
-    h5 {
+    > h5 {
         font-size: 3rem;
         font-family: ${({theme}) => theme.typography.font.text};
         width: 100%;
     }
 
-    h6 {
+    > h6 {
         color: rgba(0,0,0,.3);
         font-size: 1.4rem;
         text-transform: uppercase;
@@ -76,15 +75,14 @@ const StyledEvents = styled.div`
 `;
 
 const Dashboard = ({userData, multiplicator}) => {
-    const {name, image, experience, recommendations, peopleMet} = userData;
+    const {name} = userData;
 
     return (
         <StyledDashboard>
             <StyledContent>
                 <h5>Hey, {name}</h5>
                 <h6>Your Status</h6>
-                <ProfileImage image={image} size={90} />
-                <ProfileExperience experience={experience} />
+                <ProfileBar userData={userData} sizeImg={90} sizeExp={30} isBackground={false} />
             </StyledContent>
             <StyledEvents>
                 <h4>Daily Events</h4>
