@@ -83,6 +83,7 @@ const StyledSubmit = styled.input`
     margin: 20px 0 30px 0;
     color: ${({theme}) => theme.colors.white};
     box-shadow: 3px 3px 7px ${({theme}) => theme.colors.shades.dark}, -3px -3px 7px ${({theme}) => theme.colors.shades.light};
+    cursor: pointer;
 `;
 
 const StyledError = styled.b`

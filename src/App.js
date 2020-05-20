@@ -45,13 +45,22 @@ const menuItems = [
 
 let initAttemptedRoute = '/dash';
 
-const ProtectedRoute = ({isLoggedIn, children, userData, stores, changeExperience, ...rest}) => {
+const ProtectedRoute = ({isLoggedIn, children, userData, stores, updateUser, ...rest}) => {
     const {createNewRecommendation, getAllUserStoreRecommendations} = useDatabase(firebase.firestore);    
 
     const [storeRecommendations, setStoreRecommendations] = useState([]);
 
-    const handleStoreRecommendations = (exp, storeId, voucherId, userId) => {
-        changeExperience(userData.experience + exp);
+    const handleStoreRecommendations = (exp, storeId, voucherId, userId, lv) => {
+        let newUserData = userData;
+        if(voucherId == null) {
+            newUserData.experience += exp;
+            newUserData.recommendations += 1;
+        }
+
+        if(voucherId != null) newUserData.experience = Math.floor(newUserData.experience - Math.pow(lv * (1/.75), 2));
+
+        updateUser(newUserData);
+
         createNewRecommendation(storeId, voucherId, userId)
             .then(() => updateUserRecommendations(storeId, userId));
     };
@@ -79,7 +88,7 @@ const ProtectedRoute = ({isLoggedIn, children, userData, stores, changeExperienc
                 data={filteredStore} 
                 experience={userData.experience}
                 recommendations={storeRecommendations.filter(storeRec => storeRec.storeId === filteredStore.id)} 
-                onClick={(exp, storeId, voucherId) => handleStoreRecommendations(exp, storeId, voucherId, userData.userId)} /> 
+                onClick={(exp, storeId, voucherId, lv) => handleStoreRecommendations(exp, storeId, voucherId, userData.userId, lv)} /> 
             : <Redirect to="/dash" />;
     };
 
@@ -187,11 +196,10 @@ const App = () => {
         }
     }, [userData]);
 
-    const changeExperience = newEXP => {
-        let updatedUserData = userData;
-        updatedUserData.experience = newEXP;
-        setUserData(updatedUserData);
-        updateCurrentUser(updatedUserData, updatedUserData.docId);
+    const updateUser = (newUserData) => {
+        setUserData(newUserData);
+        updateCurrentUser(newUserData, newUserData.docId);
+        setUpdated(true);
     };
 
     const handleCreateEmailUser = (email, password, username, image) => {
@@ -278,20 +286,20 @@ const App = () => {
                         <Dashboard userData={userData} multiplicator={1} />
                     </ProtectedRoute>
 
-                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse/:title" userData={userData} stores={stores} changeExperience={changeExperience}/>
+                    <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse/:title" userData={userData} stores={stores} updateUser={updateUser} />
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/browse">
                         <Browse stores={stores} />
                     </ProtectedRoute>
 
                     <ProtectedRoute isLoggedIn={isAuthenticated} path="/radar">
-                        <Radar rangeUsers={rangeUsers} multiplicator={1} changeExperience={changeExperience} />
+                        <Radar rangeUsers={rangeUsers} multiplicator={1} updateUser={updateUser} user={userData} />
                     </ProtectedRoute>
 
                     <Redirect from="/" to="/dash" />
                 </Switch>
                 <ProfileBar userData={userData} isBackground={true} sizeImg={60} sizeExp={20} isActive={isProfileOpen} signOut={handleLogout} />
-                <Menu isLoggedIn={isAuthenticated} menuItems={menuItems} profile={userData.image} update={isUpdated} onClick={() => isProfileOpen ? setProfileOpen(false) : setProfileOpen(true)} />
+                <Menu isLoggedIn={isAuthenticated} menuItems={menuItems} profile={userData.image} update={isUpdated} setUpdated={(bool) => setUpdated(bool)} onClick={() => isProfileOpen ? setProfileOpen(false) : setProfileOpen(true)} />
             </ThemeProvider>
         </StyledApp>
     )

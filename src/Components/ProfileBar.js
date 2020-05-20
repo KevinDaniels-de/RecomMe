@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
 import iconClose from '../assets/icon-close.svg'
@@ -129,6 +129,7 @@ const StyledLogout = styled.div`
     position: relative;
     text-align: center;
     margin-left: 30px;
+    cursor: pointer;
 
     img {
         background: ${({theme}) => theme.colors.purple};
@@ -175,7 +176,7 @@ const StyledStatisticItem = styled.div`
     }
 `;
 
-const ProfileBar = ({userData, sizeImg, sizeExp, isBackground, isActive, signOut}) => {    
+const ProfileBar = ({userData, sizeImg, sizeExp, isBackground, isActive, signOut}) => {
     return (
         <StyledProfile isBackground={isBackground} className={isActive ? "active" : ""}>
             <ProfileImage image={userData.image} size={sizeImg} />

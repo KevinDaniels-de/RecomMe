@@ -24,6 +24,7 @@ const StyledUser = styled.div`
     padding: 8px;
     background: ${({theme}) => theme.colors.shades.dark};
     border-radius: 100%;
+    cursor: pointer;
     position: absolute;
     right: ${({right}) => right}%;
     bottom: ${({bottom}) => bottom}%;
@@ -85,39 +86,45 @@ const StyledEmpty = styled.h4`
     transform: translateY(-50%);
 `;
 
-const Radar = ({rangeUsers, user, multiplicator, changeExperience}) => {
-    const [isPositionSet, setPositionSet] = useState(false);
-    const [radarUsers, setRadarUsers] = useState(rangeUsers);
-    const [exp, setExp] = useState(user.experience);
+const StyledText = styled.p`
+    color: ${({theme}) => theme.colors.white};
+    font-style: oblique;
+    font-size: 1.6rem;
+`;
+
+const Radar = ({rangeUsers, user, multiplicator, updateUser}) => {    
+    const [isPositionSet, setPositionSet] = useState(false);    
 
     const generateRandomCoordinates = () => {
         // let rightInt = Math.floor(Math.random() * ((window.innerWidth - 20) - 20) + 20);
         // let bottomInt = Math.floor(Math.random() * ((window.innerHeight - 105) - 20) + 20);
         // let rightInt = Math.floor(Math.random() * (max - min + 1) + min);
         let rightInt = Math.floor(Math.random() * (85 - 5 + 1) + 5);
-        let bottomInt = Math.floor(Math.random() * (85 - 5 + 1) + 5);
+        let bottomInt = Math.floor(Math.random() * (63 - 5 + 1) + 5);
 
         return {y: bottomInt, x: rightInt};
     };
 
-    useEffect(() => {
-        if(!isPositionSet) {
-            let newRadarUsers = radarUsers.filter(user => user.show).slice(0, 5).map(user => {
-                let newCoords = generateRandomCoordinates();
-                user.x = newCoords.x;
-                user.y = newCoords.y;
-            });
+    useEffect(() => {      
+        if(rangeUsers.length > 0)  
+            if(!isPositionSet) {                
+                let newRadarUsers = rangeUsers.filter(radarUser => radarUser.show).slice(0, 5).map(user => {
+                    let newCoords = generateRandomCoordinates();
+                    user.x = newCoords.x;
+                    user.y = newCoords.y;
+                });
 
-            setPositionSet(true);
-            setRadarUsers(newRadarUsers);
-        }
-    }, [radarUsers]);
+                rangeUsers = newRadarUsers;
+
+                setPositionSet(true);
+            }
+    }, [rangeUsers]);
 
     const handleClick = (i, e) => {
         e.preventDefault();
 
-        e.target.style.right = "22%";
-        e.target.style.bottom = "-30%"
+        e.target.style.right = "26%";
+        e.target.style.bottom = "-16%"
 
         setTimeout(() => {
             rangeUsers[i].show = false;
@@ -125,14 +132,13 @@ const Radar = ({rangeUsers, user, multiplicator, changeExperience}) => {
             rangeUsers[i].y = -30;
             rangeUsers[i].x = -30;
 
-            setExp(exp + 5);
-            changeExperience(exp + 5);
-        }, 300);
-    };
+            let newUser = user;
+            newUser.experience += 5;
+            newUser.peopleMet += 1;
 
-    useEffect(() => {
-        setExp(user.experience);
-    }, [user]);
+            updateUser(newUser);
+        }, 250);
+    };
 
     const getDistance = (latA, longA, latB, longB) => {
         let R = 6371000; // km
@@ -148,12 +154,13 @@ const Radar = ({rangeUsers, user, multiplicator, changeExperience}) => {
         return Math.floor(d);
     }
 
-    console.log(rangeUsers);
-    
-
     return (
         <StyledRadar>
-            {rangeUsers.filter(user => user.show).length >= 1
+            <StyledText>
+                Find users that recommended something in your area.<br />Collect them to gain more experience!
+            </StyledText>
+
+            {rangeUsers.filter(user => user.show).length > 0
                 ? rangeUsers.map((range, i) => range.show 
                     ? <StyledUser onClick={e => handleClick(i, e)} key={i} bottom={range.y} right={range.x}>
                         <StyledDistance>{`${getDistance(user.lat, user.long, range.lat, range.long)}m`}</StyledDistance>

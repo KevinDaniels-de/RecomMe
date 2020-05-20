@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import {Link, useLocation} from 'react-router-dom'
 
@@ -61,11 +61,39 @@ const StyledUpdate = styled.div`
     width: 10px;
     height: 10px;
     border-radius: 100%;
-    border: 1px solid white;
+    border: 1px solid ${({theme}) => theme.colors.white};
     position: absolute;
     top: 0;
     right: 0;
     transform: translate(-8px, 8px);
+`;
+
+const StyledUpdateText = styled.div`
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -21px);
+    height: 20px;
+    color: ${({theme}) => theme.colors.white};
+    padding: 13px;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    background: rgba(0,0,0,.7);
+    z-index: 100000;
+    border-radius: 50px;
+
+    &::after {
+        content: "";
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 7px 10px 0 10px;
+        border-color: rgba(0,0,0,.7) transparent transparent transparent;
+        position: absolute;
+        top: 26px;
+        left: 50%;
+        transform: translate(-50%, 0);
+    }
 `;
 
 const MenuItem = ({path, svg, title}) => {
@@ -83,11 +111,10 @@ const MenuItem = ({path, svg, title}) => {
     );
 }
 
-const Menu = ({isLoggedIn, menuItems, profile, onClick, update}) => {
-    const [isUpdate, setUpdate] = useState(update);
+const Menu = ({isLoggedIn, menuItems, profile, onClick, update, setUpdated}) => {
 
     const handleClick = () => {
-        setUpdate(false);
+        setUpdated(false);
         onClick();
     };
 
@@ -100,7 +127,8 @@ const Menu = ({isLoggedIn, menuItems, profile, onClick, update}) => {
                 <StyledProfile className="nav-item" onClick={handleClick}>
                     {profile ? <StyledImage src={profile} alt="Profile"/> : ''}
                     <span>Profile</span>
-                    {isUpdate ? <StyledUpdate /> : ''}
+                    {update ? <StyledUpdate /> : ''}
+                    {update ? <StyledUpdateText>Update!</StyledUpdateText> : ''}
                 </StyledProfile>
             </StyledMenu>) 
         : ''

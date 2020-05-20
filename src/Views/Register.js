@@ -54,6 +54,7 @@ const StyledProfile = styled.div`
     text-transform: uppercase;
     letter-spacing: 2px;
     margin: 0 0 20px auto;
+    cursor: pointer;
     background: ${({theme}) => theme.colors.purple};
     box-shadow: inset 5px 5px 10px ${({theme}) => theme.colors.shades.dark}, inset -5px -5px 10px ${({theme}) => theme.colors.shades.light}, 
                 3px 3px 7px ${({theme}) => theme.colors.shades.dark}, -3px -3px 7px ${({theme}) => theme.colors.shades.light};
@@ -136,6 +137,7 @@ const StyledSubmit = styled.input`
     border-radius: 30px;
     margin-top: 20px;
     color: ${({theme}) => theme.colors.white};
+    cursor: pointer;
     box-shadow: 3px 3px 7px ${({theme}) => theme.colors.shades.dark}, -3px -3px 7px ${({theme}) => theme.colors.shades.light};
 `;
 

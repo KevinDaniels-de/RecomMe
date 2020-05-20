@@ -90,9 +90,16 @@ const StyledDescription = styled.p`
 
 const StyledVoucherTitle = styled.h5`
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     color: ${({theme}) => theme.colors.white};
     text-shadow: 2px 2px 5px ${({theme}) => theme.colors.shades.dark}, -2px -2px 5px ${({theme}) => theme.colors.shades.light};
+`;
+
+const StyledText = styled.p`
+    font-style: oblique;
+    color: ${({theme}) => theme.colors.white};;
+    font-size: 1.4rem;
+    margin-bottom: 30px;
 `;
 
 const StyledVoucherItem = styled.div`
@@ -135,6 +142,7 @@ const StyledVoucherButton = styled.button`
     padding: 15px 0;
     border-radius: 30px;
     text-transform: uppercase;
+    cursor: pointer;
     font-size: 1rem;
     font-weight: 700;
     letter-spacing: 4px;
@@ -156,6 +164,7 @@ const StyledRecommButton = styled.button`
     max-width: 230px;
     width: 100%;
     margin: 40px auto;
+    cursor: pointer;
     padding: 25px 0;
     border-radius: 30px;
     text-transform: uppercase;
@@ -172,7 +181,7 @@ const StyledRecommButton = styled.button`
     }
 `;
 
-const Store = ({data, recommendations, onClick, experience}) => {
+const Store = ({data, recommendations, onClick, experience, newUpdate}) => {
     const {id, title, description, logo, interior, vouchers} = data;
 
     const [isOpenOverlay, setOpenOverlay] = useState(false);
@@ -183,11 +192,7 @@ const Store = ({data, recommendations, onClick, experience}) => {
         clickable: true
     });
 
-    const [btnVouchers, setBtnVouchers] = useState(() => {
-        let voucherArr = [];
-        vouchers.map(voucher => voucherArr.push({...voucher, btn: "Redeem", clickable: true}));
-        return voucherArr;
-    });
+    const [btnVouchers, setBtnVouchers] = useState(() => vouchers.map(voucher => voucher = {...voucher, btn: "Redeem", clickable: true}));
     
     const [isBtnChecked, setBtnChecked] = useState(false);
 
@@ -213,7 +218,7 @@ const Store = ({data, recommendations, onClick, experience}) => {
 
             const changeBtnRecommend = () => {
                 let newBtnRecommend = {...btnRecommend};
-                const recommendFound = recommendations.filter(obj => obj.storeId === id && !obj.voucherId && Math.floor(new Date() / 1000 - obj.date.seconds) <= 172800)[0];                
+                const recommendFound = recommendations.filter(obj => obj.storeId === id && !obj.voucherId && Math.floor(new Date() / 1000 - obj.date.seconds) <= duration)[0];                
                 
                 if(recommendFound != null) {
                     const {seconds: recommendSeconds} = recommendFound.date;
@@ -236,16 +241,16 @@ const Store = ({data, recommendations, onClick, experience}) => {
             const changeBtnVouchers = () => {
                 let newBtnVouchers = btnVouchers;
 
-                newBtnVouchers.map(voucher => {
-                    const voucherFound = recommendations.filter(obj => obj.voucherId === voucher.id && Math.floor(new Date() / 1000 - obj.date.seconds) <= duration)[0];
-                                        
-                    if(voucherFound != null) {
-                        const {seconds: voucherSeconds} = voucherFound.date;
+                newBtnVouchers.map(voucher => {                    
+                    const voucherFound = recommendations.filter(obj => obj.voucherId === voucher.id && Math.floor(new Date() / 1000 - obj.date.seconds) <= duration);
+                    
+                    if(voucherFound.length > 0) {                        
+                        const {seconds: voucherSeconds} = voucherFound[0].date;
 
                         const countdownTime = new Date() / 1000 - voucherSeconds;
 
                         if(countdownTime < duration) {
-                            voucher.btn = calcTimeDiff(voucherSeconds, duration);
+                            voucher.btn = calcTimeDiff(voucherSeconds, duration);                            
                             voucher.clickable = false;
                         }
                         
@@ -267,24 +272,21 @@ const Store = ({data, recommendations, onClick, experience}) => {
                 changeBtnRecommend();
             }, 1000);
 
-            console.log("HI");
-            
-
             setBtnChecked(true);
         }
     }, [recommendations]);
 
-    const handleClick = (exp, storeId, voucherId, code) => {
+    const handleClick = (exp, storeId, voucherId, code, lv) => {
         setBtnChecked(false);
         if(voucherId != null) setOpenOverlay(true);
         if(code != null) setOverlayCode(code);
-        onClick(exp, storeId, voucherId);
+        onClick(exp, storeId, voucherId, lv);
     };
 
     return (
         <StyledStore className="store-ctn">
             <StyledInterior className="interior-ctn">
-                <Rellax speed={-4} className="interior-rellax" wrapper=".store-ctn">
+                <Rellax speed={-7} className="interior-rellax" wrapper=".store-ctn">
                     <StyledInteriorImage src={interior} alt="Interior" />
                 </Rellax>
             </StyledInterior>
@@ -302,11 +304,15 @@ const Store = ({data, recommendations, onClick, experience}) => {
 
                 <StyledVoucherTitle>Available Vouchers</StyledVoucherTitle>
 
+                <StyledText>
+                    Use your current experience and redeem your unlocked vouchers (The costs are equal to the required level).
+                </StyledText>
+
                 {btnVouchers.map(({id:voucherId, lv, title, btn, clickable, code}, i) => 
                     <StyledVoucherItem key={i} className={calcLevel(experience) < lv ? "inactive" : ""}>
                         <b>Lv {lv}</b>
                         <span>{title}</span>
-                        <StyledVoucherButton className={clickable ? "clickable" : ""} onClick={() => clickable && calcLevel(experience) >= lv ? handleClick(10, id, voucherId, code) : ''}>{btn}</StyledVoucherButton>
+                        <StyledVoucherButton className={clickable ? "clickable" : ""} onClick={() => clickable && calcLevel(experience) >= lv ? handleClick(10, id, voucherId, code, lv) : ''}>{btn}</StyledVoucherButton>
                     </StyledVoucherItem>
                 )}
             </StyledContent>
