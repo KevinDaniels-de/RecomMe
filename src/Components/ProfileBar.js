@@ -190,7 +190,7 @@ const ProfileBar = ({userData, sizeImg, sizeExp, isBackground, isActive, signOut
             <StyledStatistic>
                 <StyledStatisticItem>
                     <img src={iconRecommendation} alt="Recommendation" />
-                    <b>{userData.recommendations} Recommendations</b>
+                    <b>{userData.recommendations} {userData.recommendations === 1 ? "Recommendation" : "Recommendations"}</b>
                 </StyledStatisticItem>
                 <StyledStatisticItem>
                     <img src={iconPeople} alt="People" />
