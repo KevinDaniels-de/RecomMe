@@ -133,7 +133,7 @@ const Radar = ({rangeUsers, user, multiplicator, updateUser}) => {
             rangeUsers[i].x = -30;
 
             let newUser = user;
-            newUser.experience += 5;
+            newUser.experience += 20;
             newUser.peopleMet += 1;
 
             updateUser(newUser);

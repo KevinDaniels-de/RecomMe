@@ -298,7 +298,7 @@ const Store = ({data, recommendations, onClick, experience, newUpdate}) => {
 
                 <StyledDescription>{description}</StyledDescription>
 
-                <StyledRecommButton className={btnRecommend.clickable ? "clickable" : ""} onClick={() => btnRecommend.clickable ? handleClick(20, id) : ''}>{btnRecommend.btn}</StyledRecommButton>
+                <StyledRecommButton className={btnRecommend.clickable ? "clickable" : ""} onClick={() => btnRecommend.clickable ? handleClick(10, id) : ''}>{btnRecommend.btn}</StyledRecommButton>
 
                 <StyledDivider />
 
