@@ -8,10 +8,12 @@ RecomMe is an application that allows a user to redeem vouchers at local univers
 # Implementation
 
 ## Design
-For the layout of the app the Neomorphism style was chosen. This new-fangled look is supposed to be an intermediate step between flat- and material design. Since it is possible to define several box shadows in one selector in CSS, this design can also be used on the web and simulate a smooth three-dimensional look.
+For the layout of the app the [Neomorphism](https://uxdesign.cc/neumorphism-in-user-interfaces-b47cef3bf3a6) style was chosen. This new-fangled look is supposed to be an intermediate step between flat- and material design. Since it is possible to define several box shadows in one selector in CSS, this design can also be used on the web and simulate a smooth three-dimensional look.
 The color chosen was a strong, slightly matt purple, which is not too strenuous for the eyes and is currently in vogue, as the [Sondora](https://sondoramarketing.com/blog/2020-web-design-trends/) marketing agency explains.
 
 ## Database
+For storing and fetching data [Google Firebase](https://howtofirebase.com/what-is-firebase-fcb8614ba442?gi=6a86bf22560a) is being used. This backend system provides fast and free services to create and manage a database that uses JSON Routes. Also it is possible to host the production build of the application in the google servers for fast online testing.
+
 ### Users
 If a user has authenticated himself via his desired method (mail, facebook, google), a user is created in the database which, in addition to the login data such as user name, profile picture and ID, the current location, earned experience points, the number of recommendations and people the user met will be also stored. The position is updated every 5 seconds (if it has changed) to reduce the database fetches and the experience, recommendations and met people when interacting with them.
 
@@ -80,8 +82,8 @@ The "ViewHeader" component displays the current route using the useLocation() fu
 ## Store
 The "Store" component works with an object-prop and thus fills the user interface. But to decide which store object is the correct one, the checkStore() function filters the array based on the selected path. In combination with the dynamic route, this provides a flexible solution to fill a component appropriately.
 
-As a small optical highlight, the interior design uses Rellax to create a simple parallax effect. When a user redeems a voucher or recommends the interior design a 48-hour countdown starts. This is updated every second and is used to tell the user when these elements are available again. If there is no feedback from the user interface, the end user may believe that the application may not function properly. The user also receives or loses experience points which are displayed as an update in the status bar in the menu.
-Vouchers that the user has either redeemed or not yet activated are darker than normal and do not respond to a click. When redeeming a voucher an QR-Code is generated based on the String in the database thanks to qrcode-generator which is one of the few libraries that do not need hardware straining Canvas to generate image data but can output a <img> element.
+As a small optical highlight, the interior design uses [Rellax](https://github.com/nelonoel/react-rellax) to create a simple parallax effect. When a user redeems a voucher or recommends the interior design a 48-hour countdown starts. This is updated every second and is used to tell the user when these elements are available again. If there is no feedback from the user interface, the end user may believe that the application may not function properly. The user also receives or loses experience points which are displayed as an update in the status bar in the menu.
+Vouchers that the user has either redeemed or not yet activated are darker than normal and do not respond to a click. When redeeming a voucher an QR-Code is generated based on the String in the database thanks to [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) which is one of the few libraries that do not need hardware straining Canvas to generate image data but can output a <img> element.
 
 # Evaluation
 
@@ -100,13 +102,12 @@ After the implementation of the application was completed, these tasks were test
 Lastly, after extensive testing it can be said that all tasks are feasible and even partly exceed this. For the first task it is not only possible to log in, but also to register.
 
 ## Google Lighthouse
-In order to validate the technical aspects of RecomMe the developer console tool "Audit" is being used which is specified as "Google Lighthouse". This tool shows various technical categories in percentage from 0 to 100.  
+In order to validate the technical aspects of RecomMe the developer console tool "Audit" is being used which is specified as [Google Lighthouse](https://developers.google.com/web/tools/lighthouse). This tool shows various technical categories in percentage from 0 to 100.  
 The test with Google Lighthouse shows that "Accessibility", "Best Practices" and "SEO" have reached the full score of 100 on the desktop and "SEO" on mobile still 92.
 In terms of performance, desktop is 86 and mobile 87, which is also almost 90 and thus the green "perfect" zone. 
 This shows that the application has been implemented technically very cleanly and will be executable on future devices, which increases customer loyalty tremendously since they are not stopped by long loading times or tremendous amount of data downloads while running the application.
 
 # Conclusion
-
 It can be said that the approach started with RecomMe has great potential to increase interaction between students and the use of university facilities. Future recommendations to maximize this potential would include more user interaction and expressive animations to enhance the quality and appearance of the application.
 
 It would also be useful to enhance the radar more to improve the presentation of people in the environment in order to emphasize the human condition. Also, the usage of all firebase features like storage opens more possibilities of user data, not only for better technical implementations but also for marketing reasons and using the data in improvements of RecomMe.
