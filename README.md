@@ -1,14 +1,20 @@
 # RecomMe
 
-## Overview
-RecomMe is an application that allows a user to redeem vouchers at local university facilities to get a discounted meal or drink. To unlock these vouchers a certain amount of experience points must be collected. The higher your level the more valuable vouchers you can unlock and use. The cost of redeeming a voucher is equal to the required level. Recommend a facility or using a voucher sets a 48-hour cooldown timer before a user can repeat that action. In order to gain experience points, the user can recommend the facility to other users or "collect" people nearby. A person in the neighbourhood brings more experience than the recommendation of a facility.
-
 [**_Demo Website_**](https://recom-me.firebaseapp.com/)
+
+## Overview
+
+### Problem
+According to Hurst, [Wallace and Nixon (2013)](https://scholarworks.wmich.edu/reading_horizons/vol52/iss4/5/) nowadays the ability to learn or the education is steadily declining due to the lack of communication between students. [Magnan and Back (2007)](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1944-9720.2007.tb02853.x) stated that the willingness to learn and the ability to master a foreign language can significantly improve when local and abroad students communicate more often. To better the interaction between students an application is needed that provides this requirement with attractive incentives to bind the users.
+For this problem the application "RecomMe" (Recommend me) was developed.
+
+### Idea
+RecomMe is an application that allows a user to redeem vouchers at local university facilities to get a discounted meal or drink. To unlock these vouchers a certain amount of experience points must be collected. The higher your level the more valuable vouchers you can unlock and use. The cost of redeeming a voucher is equal to the required level. Recommend a facility or using a voucher sets a 48-hour cooldown timer before a user can repeat that action. In order to gain experience points, the user can recommend the facility to other users or "collect" people nearby. A person in the neighbourhood brings more experience than the recommendation of a facility.
 
 # Implementation
 
 ## Design
-For the layout of the app the [Neomorphism](https://uxdesign.cc/neumorphism-in-user-interfaces-b47cef3bf3a6) style was chosen. This new-fangled look is supposed to be an intermediate step between flat- and material design. Since it is possible to define several box shadows in one selector in CSS, this design can also be used on the web and simulate a smooth three-dimensional look.
+For the layout of the app the [Neomorphism](https://uxdesign.cc/neumorphism-in-user-interfaces-b47cef3bf3a6) style was chosen. This new-fangled look is supposed to be an intermediate step between flat- and material design. The reason for choosing this theme is a counter to the sheer amount of simple Material Design Apps that Google established and a more "fresh" style targets the students and can lead to more store downloads later on. Since it is possible to define several box shadows in one selector in CSS, this design can also be used on the web and simulate a smooth three-dimensional look.
 The color chosen was a strong, slightly matt purple, which is not too strenuous for the eyes and is currently in vogue, as the [Sondora](https://sondoramarketing.com/blog/2020-web-design-trends/) marketing agency explains.
 
 ## Database
@@ -86,6 +92,7 @@ As a small optical highlight, the interior design uses [Rellax](https://github.c
 Vouchers that the user has either redeemed or not yet activated are darker than normal and do not respond to a click. When redeeming a voucher an QR-Code is generated based on the String in the database thanks to [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) which is one of the few libraries that do not need hardware straining Canvas to generate image data but can output a <img> element.
 
 # Evaluation
+In order to ensure that the application is marketable and functions without problems, it must be evaluated in two different aspects. The first is the human factor, where one or more users test the application with the same tasks that were tackled in the 1st report. Finally, the technical aspect, where Google Lighthouse is used to test different categories.
 
 ## Usability Tests
 In the first report, the following tasks were designed and validated using a test group and the prototype:
@@ -105,7 +112,7 @@ Lastly, after extensive testing it can be said that all tasks are feasible and e
 In order to validate the technical aspects of RecomMe the developer console tool "Audit" is being used which is specified as [Google Lighthouse](https://developers.google.com/web/tools/lighthouse). This tool shows various technical categories in percentage from 0 to 100.  
 The test with Google Lighthouse shows that "Accessibility", "Best Practices" and "SEO" have reached the full score of 100 on the desktop and "SEO" on mobile still 92.
 In terms of performance, desktop is 86 and mobile 87, which is also almost 90 and thus the green "perfect" zone. 
-This shows that the application has been implemented technically very cleanly and will be executable on future devices, which increases customer loyalty tremendously since they are not stopped by long loading times or tremendous amount of data downloads while running the application.
+This quantitative measurement shows that the application has been implemented with technically very clean JavaScript, offers great design standards like contrast and properly font sizes and will be executable on future devices, which increases customer loyalty tremendously since they are not stopped by long loading times or tremendous amount of data downloads while running the application. 
 
 # Conclusion
 It can be said that the approach started with RecomMe has great potential to increase interaction between students and the use of university facilities. Future recommendations to maximize this potential would include more user interaction and expressive animations to enhance the quality and appearance of the application.
